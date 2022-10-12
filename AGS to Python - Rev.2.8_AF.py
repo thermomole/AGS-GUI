@@ -570,6 +570,16 @@ by pressing "Fix DICT errors".''')
                                 print(e)
                                 pass
 
+                if table == 'SHBG':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "small" in str(self.tables[table]['SHBG_TYPE'][tablerow].lower()):
+                            try:
+                                self.tables[table]['SHBG_REM'][tablerow] += " - " + self.tables[table]['SHBG_TYPE'][tablerow]
+                                self.tables[table]['SHBG_TYPE'][tablerow] = "SMALL SBOX"
+                            except Exception as e:
+                                print(e)
+                                pass
+
                 if table == 'SHBT':
                     for tablerow in range(2,len(self.tables[table])):
                             try:
@@ -593,11 +603,11 @@ by pressing "Fix DICT errors".''')
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables['GRAG']['GRAG_SILT'][tablerow] == '' and self.tables['GRAG']['GRAG_CLAY'][tablerow] == '':
                             if self.tables['GRAG']['GRAG_VCRE'][tablerow] == '':
-                                self.tables['GRAG']['GRAG_FINE'][tablerow] = 100 - (float(self.tables['GRAG']['GRAG_GRAV'][tablerow])) - (float(self.tables['GRAG']['GRAG_SAND'][tablerow]))
+                                self.tables['GRAG']['GRAG_FINE'][tablerow] = format(100 - (float(self.tables['GRAG']['GRAG_GRAV'][tablerow])) - (float(self.tables['GRAG']['GRAG_SAND'][tablerow])),".1f")
                             else:
-                                self.tables['GRAG']['GRAG_FINE'][tablerow] = 100 - (float(self.tables['GRAG']['GRAG_VCRE'][tablerow])) - (float(self.tables['GRAG']['GRAG_GRAV'][tablerow])) - (float(self.tables['GRAG']['GRAG_SAND'][tablerow]))
+                                self.tables['GRAG']['GRAG_FINE'][tablerow] = format(100 - (float(self.tables['GRAG']['GRAG_VCRE'][tablerow])) - (float(self.tables['GRAG']['GRAG_GRAV'][tablerow])) - (float(self.tables['GRAG']['GRAG_SAND'][tablerow])),'.1f')
                         else:
-                            self.tables['GRAG']['GRAG_FINE'][tablerow] = (float(self.tables['GRAG']['GRAG_SILT'][tablerow]) + float(self.tables['GRAG']['GRAG_CLAY'][tablerow]))
+                            self.tables['GRAG']['GRAG_FINE'][tablerow] = format((float(self.tables['GRAG']['GRAG_SILT'][tablerow]) + float(self.tables['GRAG']['GRAG_CLAY'][tablerow])),'.1f')
 
                 if table == 'TREG':
                     for tablerow in range(2,len(self.tables[table])):
@@ -631,6 +641,12 @@ by pressing "Fix DICT errors".''')
                         if self.tables[table]['CONG_TYPE'][tablerow] == '' and self.tables[table]['CONG_COND'][tablerow] == 'Intact':
                             try:
                                 self.tables[table]['CONG_TYPE'][tablerow] = 'CRS'
+                            except Exception as e:
+                                print(e)
+                                pass
+                        if "Intact" in self.tables[table]['CONG_COND'][tablerow]:
+                            try:
+                                self.tables[table]['CONG_COND'][tablerow] = "UNDISTURBED"
                             except Exception as e:
                                 print(e)
                                 pass
