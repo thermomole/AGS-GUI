@@ -550,7 +550,7 @@ by pressing "Fix DICT errors".''')
                                     for x in self.tables[table].keys():
                                         if "LAB" in x:
                                             self.tables[table][x][tablerow] = "GM Lab"
-                                        
+                                        print('sup christable')
 #                     if not found:
 #                         print("Unable to match sample data from gINT.")     
 #                         self.text.set('''Couldn't match sample data.
