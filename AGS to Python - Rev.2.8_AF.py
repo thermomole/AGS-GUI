@@ -716,6 +716,7 @@ by pressing "Fix DICT errors".''')
             if table in list(self.tables):
                 self.ags_tables.append(table)
 
+        for table in ags_tables:
             try:
                 try:
                     if 'match_id' not in gint_spec:
