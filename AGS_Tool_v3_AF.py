@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import *
 from tkinter import filedialog, Listbox, scrolledtext, messagebox
 from python_ags4 import AGS4
 from pandasgui import show
@@ -19,9 +18,9 @@ class Application(ct.CTkFrame):
 
         root.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
         master.geometry('375x450')
-        master.title("AGS Tool")
+        master.title("AGS Tool v3")
         
-        self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file_location, fg_color="#2b4768", 
+        self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
         corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.button_open.pack(pady=8, padx=8)
 
@@ -45,7 +44,7 @@ class Application(ct.CTkFrame):
         self.button_ags_checker.pack(pady=8)
         self.button_ags_checker.configure(state=tk.DISABLED)
 
-        self.unique_id = ct.CTkButton(self, text='''Fix AGS from GQM''', command=self.match_unique_id, 
+        self.unique_id = ct.CTkButton(self, text='''Fix AGS from GQM''', command=self.match_unique_id_gqm, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.unique_id.pack(pady=8)
         self.unique_id.configure(state=tk.DISABLED)
@@ -61,14 +60,14 @@ class Application(ct.CTkFrame):
         self.del_tbl.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
-        self.text.set("Open an AGS file and choose what to do...")
+        self.text.set("Please insert AGS file.")
+
         self.greeting = ct.CTkLabel(textvariable=self.text, text_font=("Tahoma",9))
         self.greeting.pack(pady=10)
 
         self.pack(padx=12,pady=2)
 
-        '''This holds the file location'''
-        self.file_location = ''
+        '''Empty variables created here to be used later. Also used to check previous actions, by checking if they're still empty in later functions'''
         self.temp_file_name = ''
         self.gint_path = ''
         self.tables = None
@@ -118,14 +117,13 @@ class Application(ct.CTkFrame):
             'TORV',
             'PTST',
             'RPLT',
-            #'LBST',
             ]
 
-    def get_ags_file_location(self):
+    def get_ags_file(self):
         self._disable_buttons()
 
         app.master.geometry('375x450')
-        self.text.set("Open an AGS file and choose what to do...")
+        self.text.set("Please insert AGS file.")
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -139,26 +137,25 @@ class Application(ct.CTkFrame):
 
         self.file_location = filedialog.askopenfilename(filetypes=[('AGS Files', '*.ags')])
         
-        '''do nothing if no file was selected'''
-        if self.file_location == '':
+        '''If no file selected, '''
+        if not self.file_location:
             self.text.set('''No AGS file selected!
 Please select an AGS with "Open File..."''')
             print("No AGS file selected! Please select an AGS with 'Open File...'")
-            self.button_ags_checker.configure(state=tk.DISABLED)
+            self.button_open.configure(state=tk.NORMAL)
             return
+        else:
+            self.text.set("AGS file loaded.")
+            root.update()
 
-        self.text.set("AGS file loaded successfully.")
-        print(f"Opening {self.file_location}...")
-        self.tables, self.headings = AGS4.AGS4_to_dataframe(self.file_location)
-        print(f"...done.")
-
-        '''Now a file is opened, enable buttons:'''
-        self.button_showinfo.configure(state=tk.NORMAL)
-        self.button_ags_checker.configure(state=tk.NORMAL)
-        self.button_count_results.configure(state=tk.NORMAL)
-        self.unique_id.configure(state=tk.NORMAL)
-        self.del_tbl.configure(state=tk.NORMAL)
-        self.dets.configure(state=tk.NORMAL)
+        try:
+            self.tables, self.headings = AGS4.AGS4_to_dataframe(self.file_location)
+        except:
+            print("Uh, something went wrong. Was that an AGS file? Send help.")
+            self.button_open.configure(state=tk.NORMAL)
+        finally:
+            print(f"AGS file loaded: {self.file_location}")
+            self._enable_buttons()
 
 
     def count_lab_results(self):
@@ -172,7 +169,7 @@ Please select an AGS with "Open File..."''')
             self.button_export_error.pack_forget()
             self.export = False
 
-        table_name = [
+        table_count = [
             'TRIG',
             'LNMC',
             'LDEN',
@@ -198,68 +195,75 @@ Please select an AGS with "Open File..."''')
         all_results = []
         error_tables = []
 
-        for x in table_name:
-            table = x
+        for table in table_count:
+            if table in list(self.tables):
+                self.ags_tables.append(table)
+                
+        for x in table_count:
+            if x in self.ags_tables:
+                table = x
 
-            try:
-                location = list(self.tables[x]['LOCA_ID'])
-                samp_id = list(self.tables[x]['SAMP_ID'])
-                samp_ref = list(self.tables[x]['SPEC_REF'])
-                samp_depth = list(self.tables[x]['SPEC_DPTH'])
-                test_type = ""
-                if x.__contains__('GCHM'):
-                    test_type = list(self.tables[x]['GCHM_CODE'])
-                    test_type.pop(0)
-                    test_type.pop(0)
-                    test_type_df = pd.DataFrame.from_dict(test_type)
-                elif x.__contains__('TRIG'):
-                    test_type = list(self.tables[x]['TRIG_COND'])
-                    test_type.pop(0)
-                    test_type.pop(0)
-                    test_type_df = pd.DataFrame.from_dict(test_type)
-                elif x.__contains__('CONG'):
-                    test_type = list(self.tables[x]['CONG_TYPE'])
-                    test_type.pop(0)
-                    test_type.pop(0)
-                    test_type_df = pd.DataFrame.from_dict(test_type)
-                elif x.__contains__('TREG'):
-                    test_type = list(self.tables[x]['TREG_TYPE'])
-                    test_type.pop(0)
-                    test_type.pop(0)
-                    test_type_df = pd.DataFrame.from_dict(test_type)
-                elif x.__contains__('GRAT'):
-                    test_type = list(self.tables[x]['GRAT_TYPE'])
-                    samp_with_table = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
-                    samp_with_table.pop(0)
-                    samp_with_table.pop(0)
-                    result_table = pd.DataFrame.from_dict(samp_with_table)
-                    result_table.drop_duplicates(inplace=True)
-                    result_table.columns = ['POINT','ID','REF','DEPTH','TYPE']
-                    tt = result_table['TYPE'].to_list()
-                    test_type_df = pd.DataFrame.from_dict(tt)
 
-                if not test_type == "":
-                    num_test = test_type_df.value_counts()
-                    test_counts = pd.DataFrame(num_test)
-                    head = []
-                    val = []
-                    for y in test_counts.index.tolist():
-                        head.append(y[0])
-                    for z in test_counts.values.tolist():
-                        val.append(z)
-                    count = list(zip(head,val))
-                else:
-                    count = str(len(samp_id) - 2)
-                type_list = []
-                type_list.append(str(table))
-                type_list.append(count)
-                all_results.append(type_list)
-                print(str(table) + " - " + str(type_list))
+                try:
+                    location = list(self.tables[x]['LOCA_ID'])
+                    samp_id = list(self.tables[x]['SAMP_ID'])
+                    samp_ref = list(self.tables[x]['SPEC_REF'])
+                    samp_depth = list(self.tables[x]['SPEC_DPTH'])
+                    test_type = ""
+                    if 'GCHM' in x:
+                        test_type = list(self.tables[x]['GCHM_CODE'])
+                        test_type.pop(0)
+                        test_type.pop(0)
+                        test_type_df = pd.DataFrame.from_dict(test_type)
+                    elif 'TRIG' in x:
+                        test_type = list(self.tables[x]['TRIG_COND'])
+                        test_type.pop(0)
+                        test_type.pop(0)
+                        test_type_df = pd.DataFrame.from_dict(test_type)
+                    elif 'CONG' in x:
+                        test_type = list(self.tables[x]['CONG_TYPE'])
+                        test_type.pop(0)
+                        test_type.pop(0)
+                        test_type_df = pd.DataFrame.from_dict(test_type)
+                    elif 'TREG' in x:
+                        test_type = list(self.tables[x]['TREG_TYPE'])
+                        test_type.pop(0)
+                        test_type.pop(0)
+                        test_type_df = pd.DataFrame.from_dict(test_type)
+                    elif 'GRAT'in x:
+                        test_type = list(self.tables[x]['GRAT_TYPE'])
+                        samp_with_table = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
+                        samp_with_table.pop(0)
+                        samp_with_table.pop(0)
+                        result_table = pd.DataFrame.from_dict(samp_with_table)
+                        result_table.drop_duplicates(inplace=True)
+                        result_table.columns = ['POINT','ID','REF','DEPTH','TYPE']
+                        tt = result_table['TYPE'].to_list()
+                        test_type_df = pd.DataFrame.from_dict(tt)
 
-            except Exception as e:
-                error_tables.append(str(e))
+                    if not test_type == "":
+                        num_test = test_type_df.value_counts()
+                        test_counts = pd.DataFrame(num_test)
+                        head = []
+                        val = []
+                        for y in test_counts.index.tolist():
+                            head.append(y[0])
+                        for z in test_counts.values.tolist():
+                            val.append(z)
+                        count = list(zip(head,val))
+                    else:
+                        count = str(len(samp_id) - 2)
+                    type_list = []
+                    type_list.append(str(table))
+                    type_list.append(count)
+                    all_results.append(type_list)
+                    print(str(table) + " - " + str(type_list))
 
-        print(f"Table(s) not found:  {str(error_tables)}")
+                except Exception as e:
+                    error_tables.append(str(e))
+
+        if error_tables != []:
+            print(f"Table(s) not found:  {str(error_tables)}")
 
         result_list = pd.DataFrame.from_dict(all_results, orient='columns')
         self.result_list = result_list
@@ -290,6 +294,7 @@ Please select an AGS with "Open File..."''')
         self._disable_buttons()
         self.path_directory = filedialog.asksaveasfilename(filetypes=[('CSV Files', '*.csv')],defaultextension="*.csv")
         if not self.path_directory:
+            self._enable_buttons()
             return
         self.result_list.to_csv(self.path_directory, index=False, index_label=False, header=None)
         print(f"File saved in:  + {str(self.path_directory)}")
@@ -408,8 +413,10 @@ by pressing "Fix DICT errors".''')
         self._disable_buttons()
         
         self.log_path = filedialog.asksaveasfilename(filetypes=[('Text Files', '*.txt')],defaultextension="*.txt")
-        if self.log_path == '':
+        if self.log_path == '': 
+            self._enable_buttons()
             return
+            
         with open(self.log_path, "w") as f:
             for item in self.error_list:
                 f.write("%s\n" % item)
@@ -442,30 +449,44 @@ by pressing "Fix DICT errors".''')
         self._disable_buttons()
         newFileName = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags")
         if not newFileName:
+            self._enable_buttons()
             return
         AGS4.dataframe_to_AGS4(self.tables, self.tables, newFileName)
         print('Done.')
         self._enable_buttons()
 
-
-    def match_unique_id(self):
+    def get_gint(self):
         self._disable_buttons()
 
         self.gint_location = filedialog.askopenfilename(filetypes=[('gINT Project', '*.gpj')])
+
         if self.gint_location == '':
             messagebox.showwarning(title="Gimme a gINT!", message="You didn't select a gINT file.")
+            self._enable_buttons()
             return
-        print(f"Matching to gINT: {self.gint_location}...")
+
+        try:
+            conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+self.gint_location+';')
+            query = "SELECT * FROM SPEC"
+            global gint_spec
+            gint_spec = pd.read_sql(query, conn)
+        except:
+            print("Uhh.... either that's the wrong gINT, or something went wrong.")
+            return
+
+    def get_spec(self):
+            return gint_spec
+
+
+    def match_unique_id_gqm(self):
+        self._disable_buttons()
+        self.get_gint()
+        matched = False
 
         self.text.set("Matching AGS to gINT, please wait...")
         root.update()
 
-        gint = self.gint_location
-        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+gint+';')
-        query = "SELECT * FROM SPEC"
-        gint_spec = pd.read_sql(query, conn)
-
-        if not self.ags_tables == []:
+        if self.ags_tables != []:
             self.ags_tables = []
 
         for table in self.result_tables:
@@ -475,8 +496,8 @@ by pressing "Fix DICT errors".''')
         for table in self.ags_tables:
             try:
                 try:
-                    if 'match_id' not in gint_spec:
-                        gint_spec.insert(len(list(gint_spec.columns)),'match_id','')
+                    if 'match_id' not in self.get_spec():
+                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
                 except:
                     pass
                 
@@ -486,10 +507,10 @@ by pressing "Fix DICT errors".''')
                 except:
                     pass
 
-                gint_rows = gint_spec.shape[0]
+                gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
-                    gint_spec['match_id'][row] = str(gint_spec['PointID'][row]) + str(gint_spec['SPEC_REF'][row]) + str(format(gint_spec['Depth'][row],'.2f'))
+                    self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(self.get_spec()['SPEC_REF'][row]) + str(format(self.get_spec()['Depth'][row],'.2f'))
 
                 for row in range (2,len(self.tables[table])):
                     self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TYPE'][row]) + str(self.tables[table]['SAMP_TOP'][row])
@@ -504,69 +525,56 @@ by pressing "Fix DICT errors".''')
                 try:
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
-                            #found = False
+                            matched = False
                             if table == 'SAMP':
-                                if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
-                                    #found = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = gint_spec['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = gint_spec['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = gint_spec['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SAMP_REM'][tablerow] = gint_spec['SPEC_REF'][gintrow]
-                                    self.tables[table]['SAMP_TOP'][tablerow] = format(gint_spec['SAMP_Depth'][gintrow],'.2f')
+                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                    matched = True
+                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                    self.tables[table]['SAMP_REM'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                    self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
                             elif table == 'SPEC':
-                                if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
-                                    #found = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = gint_spec['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = gint_spec['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = gint_spec['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SPEC_REF'][tablerow] = gint_spec['SPEC_REF'][gintrow]
-                            # elif table == 'LBST':
-                            #     if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
-                            #         #found = True
-                            #         self.tables[table]['SAMP_ID'][tablerow] = gint_spec['SAMP_ID'][gintrow]
-                            #         self.tables[table]['SAMP_REF'][tablerow] = gint_spec['SAMP_REF'][gintrow]
-                            #         self.tables[table]['SAMP_TYPE'][tablerow] = gint_spec['SAMP_TYPE'][gintrow]
-                            #         self.tables[table]['SAMP_TOP'][tablerow] = format(gint_spec['SAMP_Depth'][gintrow],'.2f')
+                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                    matched = True
+                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
                             elif table == 'CONG':
-                                if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
+                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                     if self.tables[table]['SPEC_REF'][tablerow] == "OED" or self.tables[table]['SPEC_REF'][tablerow] == "OEDR" and self.tables[table]['CONG_TYPE'][tablerow] == '':
                                         self.tables[table]['CONG_TYPE'][tablerow] = self.tables[table]['SPEC_REF'][tablerow]
-                                    #found = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = gint_spec['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = gint_spec['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = gint_spec['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SPEC_REF'][tablerow] = gint_spec['SPEC_REF'][gintrow]
-                                    self.tables[table]['SAMP_TOP'][tablerow] = format(gint_spec['SAMP_Depth'][gintrow],'.2f')
-                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(gint_spec['Depth'][gintrow],'.2f')
+                                    matched = True
+                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                    self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
 
                                     for x in self.tables[table].keys():
                                         if "LAB" in x:
                                             self.tables[table][x][tablerow] = "GM Lab"
                             else:
-                                if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
-                                    #found = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = gint_spec['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = gint_spec['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = gint_spec['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SPEC_REF'][tablerow] = gint_spec['SPEC_REF'][gintrow]
-                                    self.tables[table]['SAMP_TOP'][tablerow] = format(gint_spec['SAMP_Depth'][gintrow],'.2f')
-                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(gint_spec['Depth'][gintrow],'.2f')
+                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                    matched = True
+                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                    self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
 
                                     for x in self.tables[table].keys():
                                         if "LAB" in x:
                                             self.tables[table][x][tablerow] = "GM Lab"
 
-#                     if not found:
-#                         print("Unable to match sample data from gINT.")     
-#                         self.text.set('''Couldn't match sample data.
-# Did you select the correct gint?''')
-#                        root.update()
-
                 except Exception as e:
                     print(str(e))
                     pass
 
-
+                '''GRAT'''
                 if table == 'GRAT':
                     for tablerow in range(2,len(self.tables[table])):
                             try:
@@ -574,7 +582,7 @@ by pressing "Fix DICT errors".''')
                             except Exception as e:
                                 print(e)
                                 pass
-
+                '''SHBG'''
                 if table == 'SHBG':
                     for tablerow in range(2,len(self.tables[table])):
                         if "small" in str(self.tables[table]['SHBG_TYPE'][tablerow].lower()):
@@ -584,7 +592,8 @@ by pressing "Fix DICT errors".''')
                             except Exception as e:
                                 print(e)
                                 pass
-
+                
+                '''SHBT'''
                 if table == 'SHBT':
                     for tablerow in range(2,len(self.tables[table])):
                             try:
@@ -593,6 +602,7 @@ by pressing "Fix DICT errors".''')
                                 print(e)
                                 pass
 
+                '''LLPL'''
                 if table == 'LLPL':
                     if 'Non-Plastic' not in self.tables[table]:
                         self.tables[table].insert(13,'Non-Plastic','')
@@ -603,7 +613,7 @@ by pressing "Fix DICT errors".''')
                             except Exception as e:
                                 print(e)
                                 pass
-
+                '''GRAG'''
                 if table == 'GRAG':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables['GRAG']['GRAG_SILT'][tablerow] == '' and self.tables['GRAG']['GRAG_CLAY'][tablerow] == '':
@@ -614,6 +624,7 @@ by pressing "Fix DICT errors".''')
                         else:
                             self.tables['GRAG']['GRAG_FINE'][tablerow] = format((float(self.tables['GRAG']['GRAG_SILT'][tablerow]) + float(self.tables['GRAG']['GRAG_CLAY'][tablerow])),'.1f')
 
+                '''TREG'''
                 if table == 'TREG':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['TREG_TYPE'][tablerow] == 'CU' and self.tables[table]['TREG_COH'][tablerow] == '0':
@@ -623,6 +634,7 @@ by pressing "Fix DICT errors".''')
                                 print(e)
                                 pass
 
+                '''TRET'''
                 if table == 'TRET':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['TRET_SHST'][tablerow] == '':
@@ -632,6 +644,7 @@ by pressing "Fix DICT errors".''')
                                 print(e)
                                 pass
 
+                '''LPDN'''
                 if table == 'LPDN':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['LPDN_TYPE'][tablerow] == 'LARGE PKY':
@@ -641,6 +654,7 @@ by pressing "Fix DICT errors".''')
                                 print(e)
                                 pass
 
+                '''CONG'''
                 if table == 'CONG':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['CONG_TYPE'][tablerow] == '' and self.tables[table]['CONG_COND'][tablerow] == 'Intact':
@@ -656,6 +670,7 @@ by pressing "Fix DICT errors".''')
                                 print(e)
                                 pass
 
+                '''TRIG&TRIT'''
                 if table == 'TRIG' or table == 'TRIT':
                     if 'Depth' not in self.tables[table]:
                         self.tables[table].insert(8,'Depth','')
@@ -667,47 +682,44 @@ by pressing "Fix DICT errors".''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             try:
-                                if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
+                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                     if self.tables['TRIG']['TRIG_COND'][tablerow] == 'REMOULDED':
-                                        self.tables[table]['Depth'][tablerow] = format(gint_spec['Depth'][gintrow] + 0.01,'.2f')
+                                        self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow] + 0.01,'.2f')
                                     else:
-                                        self.tables[table]['Depth'][tablerow] = format(gint_spec['Depth'][gintrow],'.2f')
+                                        self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
                             except Exception as e:
                                 print(e)
                                 pass
-
-
+                            
+                '''Drop the match_id'''
                 self.tables[table].drop(['match_id'], axis=1, inplace=True)
-
 
             except Exception as e:
                 print(f"Couldn't find table, skipping...  + {str(e)}")
                 pass
 
-        self.button_save_ags.configure(state=tk.NORMAL)
-        self.del_tbl.configure(state=tk.NORMAL)
-        self.text.set("Matching complete! Click: 'Save AGS file'.")
-        root.update()
-        print("Matching complete!")
+        if matched:
+            self.button_save_ags.configure(state=tk.NORMAL)
+            self.del_tbl.configure(state=tk.NORMAL)
+            self.text.set("Matching complete! Click: 'Save AGS file'.")
+            root.update()
+            print("Matching complete!")
+            self._enable_buttons()
+        else:
+            print("Unable to match sample data from gINT.")     
+            self.text.set('''Couldn't match sample data.
+Did you select the correct gINT or AGS?''')
+            root.update()
+            self._enable_buttons()
 
-        self._enable_buttons()
 
     def match_unique_id_dets(self):
         self._disable_buttons()
-
-        self.gint_location = filedialog.askopenfilename(filetypes=[('gINT Project', '*.gpj')])
-        if self.gint_location == '':
-            messagebox.showwarning(title="Gimme a gINT!", message="You didn't select a gINT file.")
-            return
-        print(f"Matching to gINT: {self.gint_location}...")
+        self.get_gint()
+        matched = False
 
         self.text.set("Matching AGS to gINT, please wait...")
         root.update()
-
-        gint = self.gint_location
-        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+gint+';')
-        query = "SELECT * FROM SPEC"
-        gint_spec = pd.read_sql(query, conn)
 
         if not self.ags_tables == []:
             self.ags_tables = []
@@ -716,11 +728,11 @@ by pressing "Fix DICT errors".''')
             if table in list(self.tables):
                 self.ags_tables.append(table)
 
-        for table in ags_tables:
+        for table in self.ags_tables:
             try:
                 try:
-                    if 'match_id' not in gint_spec:
-                        gint_spec.insert(len(list(gint_spec.columns)),'match_id','')
+                    if 'match_id' not in self.get_spec():
+                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
                 except:
                     pass
                 
@@ -730,10 +742,10 @@ by pressing "Fix DICT errors".''')
                 except:
                     pass
 
-                gint_rows = gint_spec.shape[0]
+                gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
-                    gint_spec['match_id'][row] = str(gint_spec['PointID'][row]) + str(format(gint_spec['Depth'][row],'.2f'))
+                    self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(format(self.get_spec()['Depth'][row],'.2f'))
 
                 for row in range (2,len(self.tables[table])):
                     self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]).rsplit(' ', 2)[0] + str(self.tables[table]['SAMP_TOP'][row])
@@ -741,15 +753,15 @@ by pressing "Fix DICT errors".''')
                 try:
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
-                            if self.tables[table]['match_id'][tablerow] == gint_spec['match_id'][gintrow]:
-                                #found = True
-                                self.tables[table]['LOCA_ID'][tablerow] = gint_spec['PointID'][gintrow]
-                                self.tables[table]['SAMP_ID'][tablerow] = gint_spec['SAMP_ID'][gintrow]
-                                self.tables[table]['SAMP_REF'][tablerow] = gint_spec['SAMP_REF'][gintrow]
-                                self.tables[table]['SAMP_TYPE'][tablerow] = gint_spec['SAMP_TYPE'][gintrow]
-                                self.tables[table]['SPEC_REF'][tablerow] = gint_spec['SPEC_REF'][gintrow]
-                                self.tables[table]['SAMP_TOP'][tablerow] = format(gint_spec['SAMP_Depth'][gintrow],'.2f')
-                                self.tables[table]['SPEC_DPTH'][tablerow] = format(gint_spec['Depth'][gintrow],'.2f')
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                matched = True
+                                self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
+                                self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+                                self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
                                 
                                 for x in self.tables[table].keys():
                                         if "LAB" in x:
@@ -757,19 +769,51 @@ by pressing "Fix DICT errors".''')
                 except:
                     pass
 
+                '''GCHM'''
+                if table == 'GCHM':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "ph" in str(self.tables[table]['GCHM_UNIT'][tablerow].lower()):
+                            try:
+                                self.tables[table]['GCHM_UNIT'][tablerow] = "-"
+                            except Exception as e:
+                                print(e)
+                                pass
+
+                '''ERES'''
+                if table == 'ERES':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "solid" in str(self.tables[table]['ERES_MATX'][tablerow].lower()):
+                            try:
+                                self.tables[table]['ERES_MATX'][tablerow] = "SOLID_TOTAL"
+                            except Exception as e:
+                                print(e)
+                                pass
+                        if "<" in str(self.tables[table]['ERES_RTXT'][tablerow].lower()):
+                            self.tables[table]['ERES_RTXT'][tablerow] = str(self.tables[table]['ERES_RTXT'][tablerow]).rsplit(" ", 1)[1]
+                        if "caco3" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "CACO3"
+
+                '''Drop match_id'''
                 self.tables[table].drop(['match_id'], axis=1, inplace=True)
 
             except Exception as e:
                 print(f"Couldn't find table, skipping... {str(e)}")
                 pass
 
-        self.button_save_ags.configure(state=tk.NORMAL)
-        self.del_tbl.configure(state=tk.NORMAL)
-        self.text.set("Matching complete! Click: 'Save AGS file'.")
-        root.update()
-        print("Matching complete!")
-
-        self._enable_buttons()
+        if matched:
+            self.button_save_ags.configure(state=tk.NORMAL)
+            self.del_tbl.configure(state=tk.NORMAL)
+            self.text.set("Matching complete! Click: 'Save AGS file'.")
+            root.update()
+            print("Matching complete!")
+            self._enable_buttons()
+        else:
+            print("Unable to match sample data from gINT.")     
+            self.text.set('''Couldn't match sample data.
+Did you select the correct gint?''')
+            root.update()
+            self._enable_buttons()
+    
         
     def del_tables(self):
 
