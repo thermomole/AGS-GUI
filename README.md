@@ -1,4 +1,4 @@
-Open and edit AGS for import to an access database.
+Open, edit and check AGS for import to an access database.
 
 Designed for Geoquip-Marine.
 <br><br>
