@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, Listbox, scrolledtext, messagebox
+from tkinter import filedialog, scrolledtext, messagebox
 from python_ags4 import AGS4
 from pandasgui import show
 import pandas as pd
@@ -38,6 +38,11 @@ class Application(ct.CTkFrame):
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.button_count_results.pack(pady=8)
         self.button_count_results.configure(state=tk.DISABLED)
+
+        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_tables, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        self.del_tbl.pack(pady=8)
+        self.del_tbl.configure(state=tk.DISABLED)
         
         self.button_ags_checker = ct.CTkButton(self, text="Check AGS for Errors", command=self.check_ags, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
@@ -53,11 +58,6 @@ class Application(ct.CTkFrame):
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.dets.pack(pady=8)
         self.dets.configure(state=tk.DISABLED)
-
-        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_tables, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.del_tbl.pack(pady=8)
-        self.del_tbl.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
         self.text.set("Please insert AGS file.")
@@ -189,6 +189,7 @@ Please select an AGS with "Open File..."''')
             'PTST',
             'GCHM',
             'RESG',
+            'ERES',
             ]
 
         all_results = []
@@ -225,6 +226,11 @@ Please select an AGS with "Open File..."''')
                         test_type_df = pd.DataFrame.from_dict(test_type)
                     elif 'TREG' in x:
                         test_type = list(self.tables[x]['TREG_TYPE'])
+                        test_type.pop(0)
+                        test_type.pop(0)
+                        test_type_df = pd.DataFrame.from_dict(test_type)
+                    elif 'ERES' in x:
+                        test_type = list(self.tables[x]['ERES_TNAM'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
