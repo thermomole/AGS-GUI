@@ -44,7 +44,7 @@ class Application(ct.CTkFrame):
         self.button_ags_checker.pack(pady=8)
         self.button_ags_checker.configure(state=tk.DISABLED)
 
-        self.unique_id = ct.CTkButton(self, text='''Fix AGS from GQM''', command=self.match_unique_id_gqm, 
+        self.unique_id = ct.CTkButton(self, text='''Fix AGS from GM Lab''', command=self.match_unique_id_gqm, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.unique_id.pack(pady=8)
         self.unique_id.configure(state=tk.DISABLED)
@@ -69,7 +69,6 @@ class Application(ct.CTkFrame):
 
         '''Empty variables created here to be used later. Also used to check previous actions, by checking if they're still empty in later functions'''
         self.temp_file_name = ''
-        self.gint_path = ''
         self.tables = None
         self.headings = None
         self.gui = None
@@ -203,7 +202,6 @@ Please select an AGS with "Open File..."''')
             if x in self.ags_tables:
                 table = x
 
-
                 try:
                     location = list(self.tables[x]['LOCA_ID'])
                     samp_id = list(self.tables[x]['SAMP_ID'])
@@ -306,7 +304,9 @@ Please select an AGS with "Open File..."''')
 
         '''save ags button can be enabled once the pandasgui is created'''
         app.master.geometry('375x450')
-        self.text.set("Pandas GUI is opening, please wait...")
+        self.text.set('''PandasGUI loading, please wait...
+Close GUI to resume.''')
+        root.update()
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -453,6 +453,9 @@ by pressing "Fix DICT errors".''')
             return
         AGS4.dataframe_to_AGS4(self.tables, self.tables, newFileName)
         print('Done.')
+        self.text.set("AGS saved.")
+        root.update()
+
         self._enable_buttons()
 
     def get_gint(self):
@@ -460,31 +463,41 @@ by pressing "Fix DICT errors".''')
 
         self.gint_location = filedialog.askopenfilename(filetypes=[('gINT Project', '*.gpj')])
 
-        if self.gint_location == '':
+        if not self.gint_location:
             messagebox.showwarning(title="Gimme a gINT!", message="You didn't select a gINT file.")
             self._enable_buttons()
             return
 
+        self.text.set("Getting gINT, please wait...")
+        root.update()
+
         try:
             conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+self.gint_location+';')
             query = "SELECT * FROM SPEC"
-            global gint_spec
-            gint_spec = pd.read_sql(query, conn)
+            self.gint_spec = pd.read_sql(query, conn)
         except:
             print("Uhh.... either that's the wrong gINT, or something went wrong.")
             return
 
     def get_spec(self):
-            return gint_spec
+            return self.gint_spec
 
 
     def match_unique_id_gqm(self):
         self._disable_buttons()
         self.get_gint()
         matched = False
+        self.error = False
+
+        if not self.gint_location or self.gint_location == '':
+            self.text.set("AGS file loaded.")
+            root.update()
+            return
+
 
         self.text.set("Matching AGS to gINT, please wait...")
         root.update()
+        print(f"Matching GM Lab AGS to gINT... {self.gint_location}") 
 
         if self.ags_tables != []:
             self.ags_tables = []
@@ -492,6 +505,10 @@ by pressing "Fix DICT errors".''')
         for table in self.result_tables:
             if table in list(self.tables):
                 self.ags_tables.append(table)
+
+        if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
+            self.error = True
+            print("GCHM or ERES table(s) found.")
 
         for table in self.ags_tables:
             try:
@@ -525,82 +542,52 @@ by pressing "Fix DICT errors".''')
                 try:
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
-                            matched = False
-                            if table == 'SAMP':
-                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                    matched = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SAMP_REM'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
-                                    self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
-                            elif table == 'SPEC':
-                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                    matched = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
-                            elif table == 'CONG':
-                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                matched = True
+
+                                if table == 'CONG':
                                     if self.tables[table]['SPEC_REF'][tablerow] == "OED" or self.tables[table]['SPEC_REF'][tablerow] == "OEDR" and self.tables[table]['CONG_TYPE'][tablerow] == '':
                                         self.tables[table]['CONG_TYPE'][tablerow] = self.tables[table]['SPEC_REF'][tablerow]
-                                    matched = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
-                                    self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
-                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
 
-                                    for x in self.tables[table].keys():
-                                        if "LAB" in x:
-                                            self.tables[table][x][tablerow] = "GM Lab"
-                            else:
-                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                    matched = True
-                                    self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
-                                    self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
-                                    self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
-                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
-                                    self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
-                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+                                if table == 'SAMP':
+                                    self.tables[table]['SAMP_REM'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
 
-                                    for x in self.tables[table].keys():
-                                        if "LAB" in x:
-                                            self.tables[table][x][tablerow] = "GM Lab"
+                                self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+
+                                try:
+                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                except:
+                                    pass
+
+                                try:
+                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+                                except:
+                                    pass
+
+                                for x in self.tables[table].keys():
+                                    if "LAB" in x:
+                                        self.tables[table][x][tablerow] = "GM Lab"
 
                 except Exception as e:
                     print(str(e))
                     pass
 
-                '''GRAT'''
-                if table == 'GRAT':
-                    for tablerow in range(2,len(self.tables[table])):
-                            try:
-                                self.tables[table]['GRAT_PERP'][tablerow] = round(float(self.tables[table]['GRAT_PERP'][tablerow]))
-                            except Exception as e:
-                                print(e)
-                                pass
                 '''SHBG'''
                 if table == 'SHBG':
                     for tablerow in range(2,len(self.tables[table])):
                         if "small" in str(self.tables[table]['SHBG_TYPE'][tablerow].lower()):
-                            try:
-                                self.tables[table]['SHBG_REM'][tablerow] += " - " + self.tables[table]['SHBG_TYPE'][tablerow]
-                                self.tables[table]['SHBG_TYPE'][tablerow] = "SMALL SBOX"
-                            except Exception as e:
-                                print(e)
-                                pass
+                            self.tables[table]['SHBG_REM'][tablerow] += " - " + self.tables[table]['SHBG_TYPE'][tablerow]
+                            self.tables[table]['SHBG_TYPE'][tablerow] = "SMALL SBOX"
+
                 
                 '''SHBT'''
                 if table == 'SHBT':
                     for tablerow in range(2,len(self.tables[table])):
-                            try:
-                                self.tables[table]['SHBT_NORM'][tablerow] = round(float(self.tables[table]['SHBT_NORM'][tablerow]))
-                            except Exception as e:
-                                print(e)
-                                pass
+                        self.tables[table]['SHBT_NORM'][tablerow] = round(float(self.tables[table]['SHBT_NORM'][tablerow]))
+
 
                 '''LLPL'''
                 if table == 'LLPL':
@@ -608,11 +595,9 @@ by pressing "Fix DICT errors".''')
                         self.tables[table].insert(13,'Non-Plastic','')
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['LLPL_LL'][tablerow] == '' and self.tables[table]['LLPL_PL'][tablerow] == '' and self.tables[table]['LLPL_PI'][tablerow] == '':
-                            try:
-                                self.tables[table]['Non-Plastic'][tablerow] = -1
-                            except Exception as e:
-                                print(e)
-                                pass
+                            self.tables[table]['Non-Plastic'][tablerow] = -1
+
+
                 '''GRAG'''
                 if table == 'GRAG':
                     for tablerow in range(2,len(self.tables[table])):
@@ -624,53 +609,46 @@ by pressing "Fix DICT errors".''')
                         else:
                             self.tables['GRAG']['GRAG_FINE'][tablerow] = format((float(self.tables['GRAG']['GRAG_SILT'][tablerow]) + float(self.tables['GRAG']['GRAG_CLAY'][tablerow])),'.1f')
 
+
+                '''GRAT'''
+                if table == 'GRAT':
+                    for tablerow in range(2,len(self.tables[table])):
+                        self.tables[table]['GRAT_PERP'][tablerow] = round(float(self.tables[table]['GRAT_PERP'][tablerow]))
+
+
                 '''TREG'''
                 if table == 'TREG':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['TREG_TYPE'][tablerow] == 'CU' and self.tables[table]['TREG_COH'][tablerow] == '0':
-                            try:
-                                self.tables[table]['TREG_COH'][tablerow] = ''
-                            except Exception as e:
-                                print(e)
-                                pass
+                            self.tables[table]['TREG_COH'][tablerow] = ''
+
 
                 '''TRET'''
                 if table == 'TRET':
                     for tablerow in range(2,len(self.tables[table])):
-                        if self.tables[table]['TRET_SHST'][tablerow] == '':
-                            try:
+                        if 'TRET_SHST' in self.tables[table].keys():
+                            if self.tables[table]['TRET_SHST'][tablerow] == '':
                                 self.tables[table]['TRET_SHST'][tablerow] = round(float(self.tables[table]['TRET_DEVF'][tablerow]) / 2)
-                            except Exception as e:
-                                print(e)
-                                pass
+
 
                 '''LPDN'''
                 if table == 'LPDN':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['LPDN_TYPE'][tablerow] == 'LARGE PKY':
-                            try:
-                                self.tables[table]['LPDN_TYPE'][tablerow] = 'LARGE PYK'
-                            except Exception as e:
-                                print(e)
-                                pass
+                            self.tables[table]['LPDN_TYPE'][tablerow] = 'LARGE PYK'
+
 
                 '''CONG'''
                 if table == 'CONG':
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['CONG_TYPE'][tablerow] == '' and self.tables[table]['CONG_COND'][tablerow] == 'Intact':
-                            try:
-                                self.tables[table]['CONG_TYPE'][tablerow] = 'CRS'
-                            except Exception as e:
-                                print(e)
-                                pass
-                        if "Intact" in self.tables[table]['CONG_COND'][tablerow]:
-                            try:
-                                self.tables[table]['CONG_COND'][tablerow] = "UNDISTURBED"
-                            except Exception as e:
-                                print(e)
-                                pass
+                            self.tables[table]['CONG_TYPE'][tablerow] = 'CRS'
+                        if "intact" in str(self.tables[table]['CONG_COND'][tablerow].lower()):
+                            self.tables[table]['CONG_COND'][tablerow] = "UNDISTURBED"
+                        self.tables[table]['CONG_COND'][tablerow] = str(self.tables[table]['CONG_COND'][tablerow].upper())
 
-                '''TRIG&TRIT'''
+
+                '''TRIG & TRIT'''
                 if table == 'TRIG' or table == 'TRIT':
                     if 'Depth' not in self.tables[table]:
                         self.tables[table].insert(8,'Depth','')
@@ -681,21 +659,19 @@ by pressing "Fix DICT errors".''')
                                 self.tables[table]['TRIT_TESN'][tablerow] = 1
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
-                            try:
-                                if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                    if self.tables['TRIG']['TRIG_COND'][tablerow] == 'REMOULDED':
-                                        self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow] + 0.01,'.2f')
-                                    else:
-                                        self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
-                            except Exception as e:
-                                print(e)
-                                pass
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                if self.tables['TRIG']['TRIG_COND'][tablerow] == 'REMOULDED':
+                                    self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow] + 0.01,'.2f')
+                                else:
+                                    self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+
                             
-                '''Drop the match_id'''
-                self.tables[table].drop(['match_id'], axis=1, inplace=True)
+                '''Drop columns'''
+                if "match_id" in self.tables[table]:
+                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
 
             except Exception as e:
-                print(f"Couldn't find table, skipping...  + {str(e)}")
+                print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
         if matched:
@@ -703,11 +679,16 @@ by pressing "Fix DICT errors".''')
             root.update()
             print("Matching complete!")
             self._enable_buttons()
-        else:
-            print("Unable to match sample data from gINT.")     
+            if self.error == True:
+                self.text.set('''gINT matches, Lab doesn't.
+Re-open the AGS and select correct lab.''')
+                root.update()
+                print("GCHM or ERES table(s) found - are you sure this AGS is from GM Lab? Try matching again.")
+        else:    
             self.text.set('''Couldn't match sample data.
 Did you select the correct gINT or AGS?''')
             root.update()
+            print("Unable to match sample data from gINT.") 
             self._enable_buttons()
 
 
@@ -715,9 +696,16 @@ Did you select the correct gINT or AGS?''')
         self._disable_buttons()
         self.get_gint()
         matched = False
+        self.error = False
+
+        if not self.gint_location or self.gint_location == '':
+            self.text.set("AGS file loaded.")
+            root.update()
+            return
 
         self.text.set("Matching AGS to gINT, please wait...")
         root.update()
+        print(f"Matching DETS AGS to gINT... {self.gint_location}") 
 
         if not self.ags_tables == []:
             self.ags_tables = []
@@ -725,6 +713,12 @@ Did you select the correct gINT or AGS?''')
         for table in self.result_tables:
             if table in list(self.tables):
                 self.ags_tables.append(table)
+
+        if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
+            pass
+        else:
+            self.error = True
+            print("Cannot find GCHM or ERES - looks like this AGS is from GM Lab.")
 
         for table in self.ags_tables:
             try:
@@ -753,6 +747,10 @@ Did you select the correct gINT or AGS?''')
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                 matched = True
+                                if table == 'ERES':
+                                    if not 'ERES_REM' in self.tables[table]:
+                                        self.tables[table].insert(len(self.tables[table].keys()),'ERES_REM','')
+                                    self.tables[table]['ERES_REM'][tablerow] = self.tables[table]['SPEC_REF'][tablerow]
                                 self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
                                 self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
                                 self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
@@ -771,31 +769,44 @@ Did you select the correct gINT or AGS?''')
                 if table == 'GCHM':
                     for tablerow in range(2,len(self.tables[table])):
                         if "ph" in str(self.tables[table]['GCHM_UNIT'][tablerow].lower()):
-                            try:
-                                self.tables[table]['GCHM_UNIT'][tablerow] = "-"
-                            except Exception as e:
-                                print(e)
-                                pass
+                            self.tables[table]['GCHM_UNIT'][tablerow] = "-"
+                        if "co3" in str(self.tables[table]['GCHM_CODE'][tablerow].lower()):
+                            self.tables[table]['GCHM_CODE'][tablerow] = "CACO3"
+
 
                 '''ERES'''
                 if table == 'ERES':
                     for tablerow in range(2,len(self.tables[table])):
-                        if "solid" in str(self.tables[table]['ERES_MATX'][tablerow].lower()):
-                            try:
-                                self.tables[table]['ERES_MATX'][tablerow] = "SOLID_TOTAL"
-                            except Exception as e:
-                                print(e)
-                                pass
                         if "<" in str(self.tables[table]['ERES_RTXT'][tablerow].lower()):
                             self.tables[table]['ERES_RTXT'][tablerow] = str(self.tables[table]['ERES_RTXT'][tablerow]).rsplit(" ", 1)[1]
+                        if "solid_21" in str(self.tables[table]['ERES_REM'][tablerow].lower()) or "2:1" in str(self.tables[table]['ERES_NAME'][tablerow].lower()):
+                            self.tables[table]['ERES_NAME'][tablerow] = "SOLID_21 WATER EXTRACT"
+                        if "solid_wat" in str(self.tables[table]['ERES_REM'][tablerow].lower()):
+                            self.tables[table]['ERES_NAME'][tablerow] = "SOLID_11 WATER EXTRACT"
+                        if "solid_tot" in str(self.tables[table]['ERES_REM'][tablerow].lower()):
+                            self.tables[table]['ERES_NAME'][tablerow] = "SOLID_TOTAL"
+                        if "suplhate" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()) or "so4" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()) or "sulf" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "WS"
                         if "caco3" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
                             self.tables[table]['ERES_TNAM'][tablerow] = "CACO3"
+                        if "ph" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "PH"
+                        if "chloride" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "Cl"
+                        if "los" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "LOI"
+                        if "ph" in str(self.tables[table]['ERES_RUNI'][tablerow].lower()):
+                            self.tables[table]['ERES_RUNI'][tablerow] = "-"
 
-                '''Drop match_id'''
-                self.tables[table].drop(['match_id'], axis=1, inplace=True)
+
+                '''Drop columns'''
+                if "match_id" in self.tables[table]:
+                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
+                if "ERES_REM" in self.tables[table]:
+                    self.tables[table].drop(['ERES_REM'], axis=1, inplace=True)
 
             except Exception as e:
-                print(f"Couldn't find table, skipping... {str(e)}")
+                print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
         if matched:
@@ -803,11 +814,16 @@ Did you select the correct gINT or AGS?''')
             root.update()
             print("Matching complete!")
             self._enable_buttons()
+            if self.error == True:
+                self.text.set('''gINT matches, Lab doesn't.
+Re-open the AGS and select correct lab.''')
+                root.update()
+                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
         else:
-            print("Unable to match sample data from gINT.")     
             self.text.set('''Couldn't match sample data.
 Did you select the correct gint?''')
             root.update()
+            print("Unable to match sample data from gINT.")    
             self._enable_buttons()
     
         
@@ -821,7 +837,7 @@ Did you select the correct gint?''')
                 self.ags_tables.append(table)
 
         for table in list(self.tables):
-            if table not in self.ags_tables and not table == 'TRAN':
+            if table not in self.ags_tables and not table == 'TRAN' and not table == 'PROJ':
                 del self.tables[table]
                 print(f"{str(table)} table deleted.")
             try:
