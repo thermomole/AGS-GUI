@@ -38,11 +38,6 @@ class Application(ct.CTkFrame):
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.button_count_results.pack(pady=8)
         self.button_count_results.configure(state=tk.DISABLED)
-
-        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_tables, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.del_tbl.pack(pady=8)
-        self.del_tbl.configure(state=tk.DISABLED)
         
         self.button_ags_checker = ct.CTkButton(self, text="Check AGS for Errors", command=self.check_ags, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
@@ -58,6 +53,11 @@ class Application(ct.CTkFrame):
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.dets.pack(pady=8)
         self.dets.configure(state=tk.DISABLED)
+
+        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_tables, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        self.del_tbl.pack(pady=8)
+        self.del_tbl.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
         self.text.set("Please insert AGS file.")
@@ -488,6 +488,16 @@ by pressing "Fix DICT errors".''')
     def get_spec(self):
             return self.gint_spec
 
+    def get_ags_tables(self):
+        if self.ags_tables != []:
+            self.ags_tables = []
+
+        for table in self.result_tables:
+            if table in list(self.tables):
+                self.ags_tables.append(table)
+
+        return self.ags_tables
+
 
     def match_unique_id_gqm(self):
         self._disable_buttons()
@@ -505,12 +515,7 @@ by pressing "Fix DICT errors".''')
         root.update()
         print(f"Matching GM Lab AGS to gINT... {self.gint_location}") 
 
-        if self.ags_tables != []:
-            self.ags_tables = []
-
-        for table in self.result_tables:
-            if table in list(self.tables):
-                self.ags_tables.append(table)
+        self.get_ags_tables()
 
         if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
             self.error = True
@@ -696,6 +701,7 @@ Did you select the correct gINT or AGS?''')
             root.update()
             print("Unable to match sample data from gINT.") 
             self._enable_buttons()
+            
 
 
     def match_unique_id_dets(self):
@@ -713,12 +719,7 @@ Did you select the correct gINT or AGS?''')
         root.update()
         print(f"Matching DETS AGS to gINT... {self.gint_location}") 
 
-        if not self.ags_tables == []:
-            self.ags_tables = []
-
-        for table in self.result_tables:
-            if table in list(self.tables):
-                self.ags_tables.append(table)
+        self.get_ags_tables()
 
         if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
             pass
@@ -766,8 +767,8 @@ Did you select the correct gINT or AGS?''')
                                 self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
                                 
                                 for x in self.tables[table].keys():
-                                        if "LAB" in x:
-                                            self.tables[table][x][tablerow] = "DETS"
+                                    if "LAB" in x:
+                                        self.tables[table][x][tablerow] = "DETS"
                 except:
                     pass
 
@@ -808,8 +809,6 @@ Did you select the correct gINT or AGS?''')
                 '''Drop columns'''
                 if "match_id" in self.tables[table]:
                     self.tables[table].drop(['match_id'], axis=1, inplace=True)
-                if "ERES_REM" in self.tables[table]:
-                    self.tables[table].drop(['ERES_REM'], axis=1, inplace=True)
 
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
@@ -831,10 +830,10 @@ Did you select the correct gint?''')
             root.update()
             print("Unable to match sample data from gINT.")    
             self._enable_buttons()
+
     
         
     def del_tables(self):
-
         if not self.ags_tables == []:
             self.ags_tables = []
 
@@ -852,6 +851,7 @@ Did you select the correct gint?''')
                     print(f"{str(table)} table deleted.")
             except:
                 pass
+
         
     def _disable_buttons(self):
         self.button_open.configure(state=tk.DISABLED)
