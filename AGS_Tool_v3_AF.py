@@ -17,7 +17,7 @@ class Application(ct.CTkFrame):
         ct.CTkFrame.__init__(self, master, corner_radius=15, fg_color="#f0f0f0")
 
         root.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        master.geometry('375x450')
+        master.geometry('375x425')
         master.title("AGS Tool v3")
         
         self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
@@ -121,7 +121,7 @@ class Application(ct.CTkFrame):
     def get_ags_file(self):
         self._disable_buttons()
 
-        app.master.geometry('375x450')
+        app.master.geometry('375x425')
         self.text.set("Please insert AGS file.")
         if self.box == True:
             self.listbox.pack_forget()
@@ -269,7 +269,7 @@ Please select an AGS with "Open File..."''')
         if self.box == False:
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
             result_list.index.name = ' '
-            app.master.geometry('430x625')
+            app.master.geometry('430x600')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', result_list, 'tl')
             self.listbox.delete(1.0,3.0)
@@ -282,7 +282,7 @@ Please select an AGS with "Open File..."''')
 
             self.text.set("Results list ready to export.")
         else:
-            app.master.geometry('430x625')
+            app.master.geometry('430x600')
             self.listbox.pack(padx=20)
             pass
 
@@ -303,7 +303,7 @@ Please select an AGS with "Open File..."''')
         self._disable_buttons()
 
         '''save ags button can be enabled once the pandasgui is created'''
-        app.master.geometry('375x450')
+        app.master.geometry('375x425')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         root.update()
@@ -332,7 +332,7 @@ Close GUI to resume.''')
         
     def check_ags(self):
         self._disable_buttons()
-        app.master.geometry('375x450')
+        app.master.geometry('375x425')
         if self.dict_fix == True:
             self.button_fix_dict.pack_forget()
             self.dict_fix = False
@@ -370,7 +370,7 @@ Please select an AGS with "Open File..."''')
                     
         except ValueError as e:
             print(f'AGS Checker ended unexpectedly: {e}')
-            app.master.geometry('375x550')
+            app.master.geometry('375x525')
             self.text.set('''Something went wrong.
 Make sure there are "key" fields in the dictionary!
 Save a new AGS file with a fixed dictionary 
@@ -401,7 +401,7 @@ by pressing "Fix DICT errors".''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            app.master.geometry('375x490')
+            app.master.geometry('375x465')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
             self.button_export_error.pack(pady=(8,8))
@@ -430,7 +430,7 @@ by pressing "Fix DICT errors".''')
         if self.temp_file_name == "":
             self.dict_fix = False
             self.button_fix_dict.pack_forget()
-            app.master.geometry('375x400')
+            app.master.geometry('375x375')
             self.text.set("Open an AGS file and choose what to do...")
             root.update()
             self.check_ags()
@@ -440,7 +440,7 @@ by pressing "Fix DICT errors".''')
         self._enable_buttons()
         self.dict_fix = False
         self.button_fix_dict.pack_forget()
-        app.master.geometry('375x450')
+        app.master.geometry('375x425')
         self.text.set("Try checking the file for errors again.")
         root.update()
 
