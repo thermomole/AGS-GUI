@@ -699,8 +699,6 @@ by pressing "Fix DICT errors".''')
                 pass
 
         if matched:
-            self.button_save_ags.configure(state=tk.NORMAL)
-            self.del_tbl.configure(state=tk.NORMAL)
             self.text.set("Matching complete! Click: 'Save AGS file'.")
             root.update()
             print("Matching complete!")
@@ -801,8 +799,6 @@ Did you select the correct gINT or AGS?''')
                 pass
 
         if matched:
-            self.button_save_ags.configure(state=tk.NORMAL)
-            self.del_tbl.configure(state=tk.NORMAL)
             self.text.set("Matching complete! Click: 'Save AGS file'.")
             root.update()
             print("Matching complete!")
