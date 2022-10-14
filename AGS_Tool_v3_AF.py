@@ -134,7 +134,7 @@ class Application(ct.CTkFrame):
             self.button_export_error.pack_forget()
             self.export = False
 
-        self.file_location = filedialog.askopenfilename(filetypes=[('AGS Files', '*.ags')])
+        self.file_location = filedialog.askopenfilename(filetypes=[('AGS Files', '*.ags')],title="Please insert AGS file...")
         
         '''If no file selected, '''
         if not self.file_location:
@@ -296,7 +296,7 @@ Please select an AGS with "Open File..."''')
         
     def export_results(self):
         self._disable_buttons()
-        self.path_directory = filedialog.asksaveasfilename(filetypes=[('CSV Files', '*.csv')],defaultextension="*.csv")
+        self.path_directory = filedialog.asksaveasfilename(filetypes=[('CSV Files', '*.csv')],defaultextension="*.csv",title="Save results list as...")
         if not self.path_directory:
             self._enable_buttons()
             return
@@ -418,7 +418,7 @@ by pressing "Fix DICT errors".''')
     def export_errors(self):
         self._disable_buttons()
         
-        self.log_path = filedialog.asksaveasfilename(filetypes=[('Text Files', '*.txt')],defaultextension="*.txt")
+        self.log_path = filedialog.asksaveasfilename(filetypes=[('Text Files', '*.txt')],defaultextension="*.txt",title="Save error log as...")
         if self.log_path == '': 
             self._enable_buttons()
             return
@@ -432,7 +432,7 @@ by pressing "Fix DICT errors".''')
     def fix_dict(self):
         self.tables['DICT']['DICT_STAT'].replace(to_replace="REQUIRED",value="KEY", inplace=True)
         self._disable_buttons()
-        self.temp_file_name = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags")
+        self.temp_file_name = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags",title="Save file as...")
         if self.temp_file_name == "":
             self.dict_fix = False
             self.button_fix_dict.pack_forget()
@@ -453,7 +453,7 @@ by pressing "Fix DICT errors".''')
 
     def save_ags(self):
         self._disable_buttons()
-        newFileName = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags")
+        newFileName = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags",title="Save AGS file as...")
         if not newFileName:
             self._enable_buttons()
             return
@@ -467,7 +467,7 @@ by pressing "Fix DICT errors".''')
     def get_gint(self):
         self._disable_buttons()
 
-        self.gint_location = filedialog.askopenfilename(filetypes=[('gINT Project', '*.gpj')])
+        self.gint_location = filedialog.askopenfilename(filetypes=[('gINT Project', '*.gpj')], title="Please insert gINT database...")
 
         if not self.gint_location:
             messagebox.showwarning(title="Gimme a gINT!", message="You didn't select a gINT file.")
