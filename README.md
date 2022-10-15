@@ -62,7 +62,8 @@
 
 
 
-##### Designed for [Geoquip-Marine](https://www.geoquip-marine.com/) using [python-ags4](https://pypi.org/project/python-ags4/), [PandasGUI](https://pypi.org/project/pandasgui/), and [AGS 4 Data Format](https://www.ags.org.uk/).<br>
+##### Designed for [Geoquip-Marine](https://www.geoquip-marine.com/) using [python-ags4](https://pypi.org/project/python-ags4/), [PandasGUI](https://pypi.org/project/pandasgui/), and [AGS 4 Data Format](https://www.ags.org.uk/).
+<br>
 
 
    [![GM Logo](images/geobig.png)](https://www.geoquip-marine.com/)[![AGS Logo](images/AGSb.png)](https://www.ags.org.uk/)
