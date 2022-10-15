@@ -7,7 +7,8 @@
   ### - Select a gINT project when prompted by dialogue box (check the gINT is correct)
   ### - Once "Matching Complete!" is displayed, select 'Save AGS file'
   ### - Save the file when prompted by the dialogue box
-  ### - Open gINT, go to File > Import AGS. Select the AGS file saved via the tool, and select the .gci import correspondence file
+  ### - Open gINT, go to File > Import AGS
+  ### - Select the AGS file saved via the tool, and select the .gci import correspondence file
   
 
 
