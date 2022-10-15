@@ -58,7 +58,7 @@
 
 <br><br>
 
-- Designed for [Geoquip-Marine](https://www.geoquip-marine.com/).
+- Designed for [Geoquip-Marine](https://www.geoquip-marine.com/) using [python-ags4](https://pypi.org/project/python-ags4/) and [AGS standard](https://www.ags.org.uk/).
 
 
 [![GM Logo](images/geobig.png)](https://www.geoquip-marine.com/)[![AGS Logo](images/AGSb.png)](https://www.ags.org.uk/)
