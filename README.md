@@ -40,6 +40,7 @@
   - Version AGS 4+ supported (e.g. '4.1.1', '4.1', '4.0.4', '4.0.3', '4.0').
     - This will check the dictionary for fields named as KEY and REQUIRED as part of the error checking process to establish unique records.
     - Minor errors may arise with fields in DICT with incorrect DICT_STAT, (e.g. if a SPEC_DPTH field is not used as a KEY or REQUIRED field in DICT.DICT_STAT).
+    - Error logs can be exported to a .txt file.
 
 #### Fix AGS from GM Lab.
   - Designed to match sample data to a gINT database on AGS received from GM Lab.
