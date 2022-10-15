@@ -61,7 +61,7 @@
 Designed for Geoquip-Marine.
 
 
-![GM Logo](images/geobig.png)![AGS Logo](images/AGSb.png)
+[![GM Logo](images/geobig.png)](https://www.geoquip-marine.com/)[![AGS Logo](images/AGSb.png)](https://www.ags.org.uk/)
 
 <br>
 
