@@ -62,7 +62,7 @@
 
 
 
-##### Designed for [Geoquip-Marine](https://www.geoquip-marine.com/) using [python-ags4](https://pypi.org/project/python-ags4/), [PandasGUI](https://pypi.org/project/pandasgui/), and [AGS 4 Data Format](https://www.ags.org.uk/).
+##### Designed for [Geoquip-Marine](https://www.geoquip-marine.com/) and [AGS 4 Data Format](https://www.ags.org.uk/) using [python-ags4](https://pypi.org/project/python-ags4/), [PandasGUI](https://pypi.org/project/pandasgui/), [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter).
 <br>
 
 
