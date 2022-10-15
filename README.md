@@ -65,4 +65,4 @@ Designed for Geoquip-Marine.
 
 <br>
 
-- Anton [lachesis17](https://github.com/lachesis17)] 🪐
+- Anton [(lachesis17)](https://github.com/lachesis17) 🪐
