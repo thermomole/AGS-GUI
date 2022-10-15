@@ -8,6 +8,9 @@ import pyodbc
 import warnings
 warnings.filterwarnings("ignore")
 
+''''''
+####### MAKE A CPT ONLY BUTTON. DELETE ALL NON-ESSENTIAL TABLES BAR SCPG, SCPT, SCCT ETC.
+
 class Application(ct.CTkFrame):
 
     ct.set_appearance_mode("system")
