@@ -8,9 +8,6 @@ import pyodbc
 import warnings
 warnings.filterwarnings("ignore")
 
-''''''
-####### MAKE A CPT ONLY BUTTON. DELETE ALL NON-ESSENTIAL TABLES BAR SCPG, SCPT, SCCT ETC.
-
 class Application(ct.CTkFrame):
 
     ct.set_appearance_mode("system")
@@ -20,8 +17,8 @@ class Application(ct.CTkFrame):
         ct.CTkFrame.__init__(self, master, corner_radius=15, fg_color="#f0f0f0")
 
         root.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        master.geometry('375x425')
-        master.title("AGS Tool v3")
+        master.geometry('375x470')
+        master.title("AGS Tool v3.01")
         
         self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
         corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
@@ -57,10 +54,15 @@ class Application(ct.CTkFrame):
         self.dets.pack(pady=8)
         self.dets.configure(state=tk.DISABLED)
 
-        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_tables, 
+        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_non_lab_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.del_tbl.pack(pady=8)
         self.del_tbl.configure(state=tk.DISABLED)
+
+        self.cpt_only = ct.CTkButton(self, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        self.cpt_only.pack(pady=8)
+        self.cpt_only.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
         self.text.set("Please insert AGS file.")
@@ -81,6 +83,8 @@ class Application(ct.CTkFrame):
         self.error_list = []
         self.ags_tables = []
         self.export = False
+
+        self.core_tables = ["TRAN","PROJ","UNIT","ABBR","TYPE","DICT","LOCA"]
 
         self.result_tables = [
             'SAMP',
@@ -121,10 +125,11 @@ class Application(ct.CTkFrame):
             'RPLT',
             ]
 
+
     def get_ags_file(self):
         self._disable_buttons()
 
-        app.master.geometry('375x425')
+        app.master.geometry('375x470')
         self.text.set("Please insert AGS file.")
         if self.box == True:
             self.listbox.pack_forget()
@@ -171,7 +176,7 @@ Please select an AGS with "Open File..."''')
             self.button_export_error.pack_forget()
             self.export = False
 
-        table_count = [
+        lab_tables = [
             'TRIG',
             'LNMC',
             'LDEN',
@@ -197,48 +202,50 @@ Please select an AGS with "Open File..."''')
 
         all_results = []
         error_tables = []
+        result_list = []
+        self.result_list = []
+        self.ags_table_reset()
 
-        for table in table_count:
+        for table in lab_tables:
             if table in list(self.tables):
                 self.ags_tables.append(table)
                 
-        for x in table_count:
-            if x in self.ags_tables:
-                table = x
+        for table in lab_tables:
+            if table in self.ags_tables:
 
                 try:
-                    location = list(self.tables[x]['LOCA_ID'])
-                    samp_id = list(self.tables[x]['SAMP_ID'])
-                    samp_ref = list(self.tables[x]['SPEC_REF'])
-                    samp_depth = list(self.tables[x]['SPEC_DPTH'])
+                    location = list(self.tables[table]['LOCA_ID'])
+                    samp_id = list(self.tables[table]['SAMP_ID'])
+                    samp_ref = list(self.tables[table]['SPEC_REF'])
+                    samp_depth = list(self.tables[table]['SPEC_DPTH'])
                     test_type = ""
-                    if 'GCHM' in x:
-                        test_type = list(self.tables[x]['GCHM_CODE'])
+                    if 'GCHM' in table:
+                        test_type = list(self.tables[table]['GCHM_CODE'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
-                    elif 'TRIG' in x:
-                        test_type = list(self.tables[x]['TRIG_COND'])
+                    elif 'TRIG' in table:
+                        test_type = list(self.tables[table]['TRIG_COND'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
-                    elif 'CONG' in x:
-                        test_type = list(self.tables[x]['CONG_TYPE'])
+                    elif 'CONG' in table:
+                        test_type = list(self.tables[table]['CONG_TYPE'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
-                    elif 'TREG' in x:
-                        test_type = list(self.tables[x]['TREG_TYPE'])
+                    elif 'TREG' in table:
+                        test_type = list(self.tables[table]['TREG_TYPE'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
-                    elif 'ERES' in x:
-                        test_type = list(self.tables[x]['ERES_TNAM'])
+                    elif 'ERES' in table:
+                        test_type = list(self.tables[table]['ERES_TNAM'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
-                    elif 'GRAT'in x:
-                        test_type = list(self.tables[x]['GRAT_TYPE'])
+                    elif 'GRAT'in table:
+                        test_type = list(self.tables[table]['GRAT_TYPE'])
                         samp_with_table = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
                         samp_with_table.pop(0)
                         samp_with_table.pop(0)
@@ -276,9 +283,13 @@ Please select an AGS with "Open File..."''')
         self.result_list = result_list
 
         if self.box == False:
+            if result_list.empty:
+                df_list = ["Error: No laboratory test results found."]
+                empty_df = pd.DataFrame.from_dict(df_list)
+                result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
             result_list.index.name = ' '
-            app.master.geometry('430x600')
+            app.master.geometry('430x665')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', result_list, 'tl')
             self.listbox.delete(1.0,3.0)
@@ -291,12 +302,25 @@ Please select an AGS with "Open File..."''')
 
             self.text.set("Results list ready to export.")
         else:
-            app.master.geometry('430x600')
+            app.master.geometry('430x665')
+            self.listbox.pack_forget()
+            self.button_export_results.pack_forget()
+            self.listbox.delete(1.0,100.0)
+            if result_list.empty:
+                df_list = ["Error: No laboratory test results found."]
+                empty_df = pd.DataFrame.from_dict(df_list)
+                result_list = empty_df
+            result_list.index.name = ' '
+            self.listbox.tag_configure('tl', justify='left')
+            self.listbox.insert('end', result_list, 'tl')
+            self.listbox.delete(1.0,3.0)
             self.listbox.pack(padx=20)
+            self.button_export_results.pack(pady=(8,8))
             pass
 
         self._enable_buttons()
         
+
     def export_results(self):
         self._disable_buttons()
         self.path_directory = filedialog.asksaveasfilename(filetypes=[('CSV Files', '*.csv')],defaultextension="*.csv",title="Save results list as...")
@@ -308,11 +332,11 @@ Please select an AGS with "Open File..."''')
 
         self._enable_buttons()
 
+
     def start_pandasgui(self):
         self._disable_buttons()
 
-        '''save ags button can be enabled once the pandasgui is created'''
-        app.master.geometry('375x425')
+        app.master.geometry('375x470')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         root.update()
@@ -325,7 +349,6 @@ Close GUI to resume.''')
             self.export = False
         root.update()
         
-
         try:
             self.gui = show(**self.tables)
         except:
@@ -339,9 +362,10 @@ Close GUI to resume.''')
                 self.ags_tables.append(table)
         self._enable_buttons()
         
+
     def check_ags(self):
         self._disable_buttons()
-        app.master.geometry('375x425')
+        app.master.geometry('375x470')
         if self.dict_fix == True:
             self.button_fix_dict.pack_forget()
             self.dict_fix = False
@@ -379,7 +403,7 @@ Please select an AGS with "Open File..."''')
                     
         except ValueError as e:
             print(f'AGS Checker ended unexpectedly: {e}')
-            app.master.geometry('375x525')
+            app.master.geometry('375x570')
             self.text.set('''Something went wrong.
 Make sure there are "key" fields in the dictionary!
 Save a new AGS file with a fixed dictionary 
@@ -410,7 +434,7 @@ by pressing "Fix DICT errors".''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            app.master.geometry('375x465')
+            app.master.geometry('375x510')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
             self.button_export_error.pack(pady=(8,8))
@@ -439,7 +463,7 @@ by pressing "Fix DICT errors".''')
         if self.temp_file_name == "":
             self.dict_fix = False
             self.button_fix_dict.pack_forget()
-            app.master.geometry('375x375')
+            app.master.geometry('375x420')
             self.text.set("Open an AGS file and choose what to do...")
             root.update()
             self.check_ags()
@@ -449,7 +473,7 @@ by pressing "Fix DICT errors".''')
         self._enable_buttons()
         self.dict_fix = False
         self.button_fix_dict.pack_forget()
-        app.master.geometry('375x425')
+        app.master.geometry('375x470')
         self.text.set("Try checking the file for errors again.")
         root.update()
 
@@ -837,11 +861,15 @@ Did you select the correct gint?''')
             print("Unable to match sample data from gINT.")    
             self._enable_buttons()
 
-    
-        
-    def del_tables(self):
+
+    def ags_table_reset(self):
         if not self.ags_tables == []:
             self.ags_tables = []
+        return self.ags_tables
+
+        
+    def del_non_lab_tables(self):
+        self.ags_table_reset()
 
         for table in self.result_tables:
             if table in list(self.tables):
@@ -858,6 +886,41 @@ Did you select the correct gint?''')
             except:
                 pass
 
+
+    def get_cpt_tables(self):
+        self.ags_table_reset()
+
+        self.cpt_tables = ["SCPG","SCPT","SCPP","SCCG","SCCT","SCDG","SCDT"]
+
+        for table in self.cpt_tables:
+            if table in list(self.tables):
+                self.ags_tables.append(table)
+
+
+    def del_non_cpt_tables(self):
+        self.get_cpt_tables()
+
+        if not self.ags_tables == []:
+            for table in self.core_tables:
+                if table in list(self.tables):
+                    self.ags_tables.append(table)
+
+            for table in list(self.tables):
+                if table not in self.ags_tables:
+                    del self.tables[table]
+                    print(f"{str(table)} table deleted.")
+
+            self.text.set('''CPT Only export ready.
+    Click "Save AGS file"''')
+            root.update()
+            print("CPT Data export ready. Click 'Save AGS file'.")
+
+        else:
+            self.text.set('''Could not find any CPT tables.
+Check the AGS with "View data".''')
+            root.update()
+            print("No CPT groups found - did this AGS contain CPT data? Check the data with 'View data'.")
+
         
     def _disable_buttons(self):
         self.button_open.configure(state=tk.DISABLED)
@@ -868,6 +931,7 @@ Did you select the correct gint?''')
         self.unique_id.configure(state=tk.DISABLED)
         self.del_tbl.configure(state=tk.DISABLED)
         self.dets.configure(state=tk.DISABLED)
+        self.cpt_only.configure(state=tk.DISABLED)
         
     def _enable_buttons(self):
         self.button_open.configure(state=tk.NORMAL)
@@ -878,6 +942,7 @@ Did you select the correct gint?''')
         self.unique_id.configure(state=tk.NORMAL)
         self.del_tbl.configure(state=tk.NORMAL)
         self.dets.configure(state=tk.NORMAL)
+        self.cpt_only.configure(state=tk.NORMAL)
 
 root = ct.CTk()
 app = Application(root)
