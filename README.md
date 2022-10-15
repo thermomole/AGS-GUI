@@ -43,7 +43,7 @@
   - Designed to match sample data to a gINT database on AGS received from GM Lab.
   - Specific conditions are hard-coded to account for inconsistencies between issues of AGS from this lab, such as not being able to produce GRAG_FINE reliably.
   - As the lab is currently not accredited for chemical testing, there is a check in place to look for ERES or GCHM groups, to flag whether this AGS is from GM Lab - otherwise several matching features will be redundant.
-  - As well as amending values and placement of values, it will also rename and reformat fields to be imported into an access database.
+  - As well as amending values and placement of values, it will also rename and reformat fields to be imported into gINT.
 
 - Fix AGS from DETS.
   - Similar to above, this will match sample data to gINT from an AGS provided by DETS.
