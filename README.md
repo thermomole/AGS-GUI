@@ -1,4 +1,4 @@
-#### **Open, edit and check AGS for import to an access database (gINT).**
+### **Open, edit and check AGS for import to an access database (gINT).**
 
 
 
