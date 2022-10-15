@@ -21,35 +21,36 @@
 
 #### - View Data.
   - This opens the AGS, which has been extracted as a dictionary of dictionaries, into PandasGUI.
-  - This has some limited functionality of being to edit fields, delete tables (groups), export single tables (groups) to .csv files, as well as some filter queries.
+    - This has some limited functionality of being to edit fields, delete tables (groups), export single tables (groups) to .csv files, as well as some filter queries.
 
 #### - Save AGS file.
-  - This allows the current state of the loaded AGS to be saved, whether it has been edited in PandasGUI, or matched to gINT.
-  - If a filter was used in PandasGUI, it will save the new AGS with the filter applied.
-  - If non-result tables were deleted, they will be deleted in the saved file.
+  - This allows the current state of the loaded AGS to be saved.
+    - This includes edits in PandasGUI, or matching sample data to gINT.
+    - If a filter was used in PandasGUI, it will save the new AGS with the filter applied.
+    - If non-result tables were deleted, they will be deleted in the saved file.
 
 #### - Count lab results.
   - This checks certain parent groups for specific fields relating to test type.
-  - For triaxial results, like unconsolidated undrained, the sample condition is used to distinguish test type.
-  - The list of groups and their test types can be exported to a .txt file.
+    - For triaxial results, like unconsolidated undrained, the sample condition is used to distinguish test type.
+    - The list of groups and their test types can be exported to a .txt file.
 
 #### - Check AGS for errors.
   - This will use the AGS standard dictionary to check the file for errors.
-  - The version of the AGS named in the TRAN group will be used - as long as above AGS 4+ (e.g. '4.1.1', '4.1', '4.0.4', '4.0.3', '4.0').
-  - This will check the dictionary for fields named as KEY and REQUIRED as part of the error checking process to establish unique records.
-  - Minor errors may arise with fields in DICT with incorrect DICT_STAT, (e.g. if a SPEC_DPTH field is not used as a KEY or REQUIRED field in DICT.DICT_STAT).
+  - The AGS version in the TRAN group will be used - as long as the format is AGS 4+ (e.g. '4.1.1', '4.1', '4.0.4', '4.0.3', '4.0').
+    - This will check the dictionary for fields named as KEY and REQUIRED as part of the error checking process to establish unique records.
+    - Minor errors may arise with fields in DICT with incorrect DICT_STAT, (e.g. if a SPEC_DPTH field is not used as a KEY or REQUIRED field in DICT.DICT_STAT).
 
 #### - Fix AGS from GM Lab.
   - Designed to match sample data to a gINT database on AGS received from GM Lab.
-  - Specific conditions are hard-coded to account for inconsistencies between issues of AGS from this lab, such as GRAG_FINE.
-  - As the lab is currently not accredited for chemical testing, there is a check in place to look for ERES or GCHM groups, to flag whether this AGS is from GM Lab - otherwise several matching features will be redundant.
-  - As well as amending values and placement of values, it will also rename and reformat fields to be imported into gINT.
+    - Specific conditions are hard-coded to account for inconsistencies between issues of AGS from this lab, such as GRAG_FINE.
+    - As the lab is currently not accredited for chemical testing, there is a check in place to look for ERES or GCHM groups, to flag whether this AGS is from GM Lab - otherwise several matching features will be redundant.
+    - As well as amending values and placement of values, it will also rename and reformat fields to be imported into gINT.
 
 #### - Fix AGS from DETS.
   - Similar to above, this will match sample data to gINT from an AGS provided by DETS.
-  - As these issues of AGS are restricted to chemical results, there is a check to search for ERES and GCHM groups.
-  - As there are several fields that seem to report the same information (such as ratio of solid mass to water content in testing method), it will rename and reformat accordingly based on strings or values found in named fields.
-  - As borehole names were erroneous and inconsistent between issues of AGS, strings in LOCA_ID will be split on the first use of whitespace, to remove unnecessary data.
+    - As these issues of AGS are restricted to chemical results, there is a check to search for ERES and GCHM groups.
+    - As there are several fields that seem to report the same information (such as ratio of solid mass to water content in testing method), it will rename and reformat accordingly based on strings or values found in named fields.
+    - As borehole names were erroneous and inconsistent between issues of AGS, strings in LOCA_ID will be split on the first use of whitespace, to remove unnecessary data.
 
 #### - Delete Non-Result tables.
   - This checks the groups found in the loaded AGS file against a set list of groups expected to contain labortory test results.
