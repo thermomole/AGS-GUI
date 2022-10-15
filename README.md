@@ -14,7 +14,7 @@
   
 <br>
 
-#### - Open an AGS file.
+#### Open an AGS file.
   - Open any valid AGS files.
     - There may be an error as follows: Error: Line x does not have the same number of entries as the HEADING.
     - This occurs when a description or other text field contains a line-break, which alters key formatting of the file. The line-break needs to be removed before opening the file.
