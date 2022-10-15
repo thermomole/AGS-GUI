@@ -1,6 +1,6 @@
 ### **Open, edit and check AGS for import to an access database (gINT).**
 
-
+<br><br><br>
 
 
 
@@ -15,7 +15,7 @@
      - Select the AGS file saved via the tool, and select the .gci import correspondence file
   
 
-
+<br><br><br>
 
 
 
