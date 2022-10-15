@@ -1,4 +1,15 @@
-Open, edit and check AGS for import to an access database.
+## Open, edit and check AGS for import to an access database (gINT).
+
+## - Steps for gINT Import:
+  # - Open a valid AGS from GM Lab or DETS
+  # - Delete Non-Result Tables
+  # - Select 'Fix AGS' for the relevent lab (check the lab is correct)
+  # - Select a gINT project when prompted by dialogue box (check the gINT is correct)
+  # - Once "Matching Complete!" is displayed, select 'Save AGS file'
+  # - Save the file when prompted by the dialogue box
+  # - Open gINT, go to File > Import AGS. Select the AGS file saved via the tool, and select the .gci import correspondence file
+  
+
 
 - Open an AGS file.
   - Open any valid AGS files.
@@ -42,7 +53,6 @@ Open, edit and check AGS for import to an access database.
   - This is used not only to remove unnecessary data to improve load times for PandasGUI, and to improve match time for sample data from gINT (by removing non-used tables from the loop), but also to remove groups that may conflict when the file is imported to gINT (e.g. removing SAMP table to not create incorrect duplicate samples, with results being a child of the duplicates).
 
 
-[b] - Steps for gINT Import:
 
 
 
