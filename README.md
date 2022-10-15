@@ -54,8 +54,8 @@
 
 #### - Delete Non-Result tables.
   - This checks the groups found in the loaded AGS file against a set list of groups expected to contain labortory test results.
-  - This is mainly used remove groups that may conflict when the file is imported to gINT (e.g. removing SAMP table to not create incorrect duplicate samples, with results being a child of the duplicates), and but also filters data (removing CPT data expected  to improve load times for PandasGUI, and to improve match time for sample data from gINT (by removing non-used tables from the loop).
-  - TRAN and PROJ are the two tables gINT need flag the AGS as readable data (with TRAN needed for the AGS version, and PROJ used as the parent of all other tables) - they are included with lab results and omitted with the correspondence file, to import only relevent data from onshore labs. 
+    - This is mainly used remove groups that may conflict when the file is imported to gINT (e.g. removing SAMP table to not create incorrect duplicate samples, with results being a child of the duplicates), and but also filters data (removing CPT data expected  to improve load times for PandasGUI, and to improve match time for sample data from gINT (by removing non-used tables from the loop).
+    - TRAN and PROJ are the two tables gINT need flag the AGS as readable data (with TRAN needed for the AGS version, and PROJ used as the parent of all other tables) - they are included with lab results and omitted with the correspondence file, to import only relevent data from onshore labs. 
 
 <br><br>
 
