@@ -55,7 +55,7 @@
   - This checks the groups found in the loaded AGS file against a set list of groups expected to contain lab results.
   - This is used not only to remove unnecessary data to improve load times for PandasGUI, and to improve match time for sample data from gINT (by removing non-used tables from the loop), but also to remove groups that may conflict when the file is imported to gINT (e.g. removing SAMP table to not create incorrect duplicate samples, with results being a child of the duplicates).
 
-<br>
+<br><br>
 
 Designed for Geoquip-Marine.
 
@@ -64,4 +64,4 @@ Designed for Geoquip-Marine.
 
 <br>
 
-- Anton (lachesis17)
+- Anton (lachesis17) 🪐
