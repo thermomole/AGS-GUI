@@ -43,7 +43,7 @@ Designed for Geoquip-Marine.
 
 - Check AGS for errors.
   - This will use the AGS standard dictionary to check the file for errors.
-  - The version of the AGS named in the TRAN group will be used - as long as above AGS 4+ (e.g. should be one of '4.1.1', '4.1', '4.0.4', '4.0.3', '4.0').
+  - The version of the AGS named in the TRAN group will be used - as long as above AGS 4+ (e.g. '4.1.1', '4.1', '4.0.4', '4.0.3', '4.0').
   - This will check the dictionary for fields named as KEY and REQUIRED as part of the error checking process to establish unique records.
   - Minor errors may arise with fields in DICT with incorrect DICT_STAT, (e.g. if a SPEC_DPTH field is not used as a KEY or REQUIRED field in DICT.DICT_STAT).
 
