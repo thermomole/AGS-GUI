@@ -61,7 +61,7 @@
     
 #### CPT Only Data Export.
   - Similar to above, checks the groups found in the loaded AGS file against a set list of groups expected to contain CPT data, including sesimic.
-    - Deletes all non-essential tables, keeping CPT only data.
+    - Deletes all non-essential tables, keeping only CPT data.
 
 <br><br>
 
