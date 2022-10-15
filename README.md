@@ -1,4 +1,4 @@
-### **Open, edit and check AGS for import to an access database (gINT).**
+### **- Open, edit and check AGS for import to an access database (gINT).**
 
 <br>
 
@@ -58,7 +58,7 @@
 
 <br><br>
 
-Designed for [Geoquip-Marine](https://www.geoquip-marine.com/).
+- Designed for [Geoquip-Marine](https://www.geoquip-marine.com/).
 
 
 [![GM Logo](images/geobig.png)](https://www.geoquip-marine.com/)[![AGS Logo](images/AGSb.png)](https://www.ags.org.uk/)
