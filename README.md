@@ -67,7 +67,7 @@
 <br>
 
 
-   [![GM Logo](images/geobig.png)](https://www.geoquip-marine.com/)[![AGS Logo](images/AGSb.png)](https://www.ags.org.uk/)
+   <a href="https://www.geoquip-marine.com/"><img src="images/geobig.png" data-canonical-src="images/geobig.png" width="80"/></a><a href="https://www.ags.org.uk/"><img src="images/AGSb.png" data-canonical-src="images/AGSb.png" height="65" /></a>
 
 
 <br>
