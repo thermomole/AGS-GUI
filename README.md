@@ -1,5 +1,8 @@
 ## Open, edit and check AGS for import to an access database (gINT).
 
+
+
+
 ### - Steps for gINT Import:
   ### - Open a valid AGS from GM Lab or DETS
   ### - Delete Non-Result Tables
@@ -10,6 +13,9 @@
   ### - Open gINT, go to File > Import AGS
   ### - Select the AGS file saved via the tool, and select the .gci import correspondence file
   
+
+
+
 
 
 - Open an AGS file.
