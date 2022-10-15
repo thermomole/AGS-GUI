@@ -19,16 +19,16 @@
   - There may be an error as follows: Error: Line x does not have the same number of entries as the HEADING.
   - This occurs when a description or other text field contains a line-break, which alters key formatting of the file. The line-break needs to be removed before opening the file.
 
-- #View Data.
+# - View Data.
   - This opens the AGS, which has been extracted as a dictionary of dictionaries, into PandasGUI.
   - This has some limited functionality of being to edit fields, delete tables (groups), export single tables (groups) to .csv files, as well as some filter queries.
 
-- #Save AGS file.
+# - Save AGS file.
   - This allows the current state of the loaded AGS to be saved, whether it has been edited in PandasGUI, or matched to gINT.
   - If a filter was used in PandasGUI, it will save the new AGS with the filter applied.
   - If non-result tables were deleted, they will be deleted in the saved file.
 
-- #Count lab results.
+# - Count lab results.
   - This checks certain parent groups for specific fields relating to test type.
   - For triaxial results, like unconsolidated undrained, the sample condition is used to distinguish test type.
   - The list of groups and their test types can be exported to a .txt file.
