@@ -600,7 +600,8 @@ by pressing "Fix DICT errors".''')
                 '''SHBT'''
                 if table == 'SHBT':
                     for tablerow in range(2,len(self.tables[table])):
-                        self.tables[table]['SHBT_NORM'][tablerow] = round(float(self.tables[table]['SHBT_NORM'][tablerow]))
+                        if self.tables[table]['SHBT_NORM'][tablerow]:
+                            self.tables[table]['SHBT_NORM'][tablerow] = round(float(self.tables[table]['SHBT_NORM'][tablerow]))
 
 
                 '''LLPL'''
@@ -627,7 +628,8 @@ by pressing "Fix DICT errors".''')
                 '''GRAT'''
                 if table == 'GRAT':
                     for tablerow in range(2,len(self.tables[table])):
-                        self.tables[table]['GRAT_PERP'][tablerow] = round(float(self.tables[table]['GRAT_PERP'][tablerow]))
+                        if self.tables[table]['GRAT_PERP'][tablerow]:
+                            self.tables[table]['GRAT_PERP'][tablerow] = round(float(self.tables[table]['GRAT_PERP'][tablerow]))
 
 
                 '''TREG'''
@@ -641,7 +643,7 @@ by pressing "Fix DICT errors".''')
                 if table == 'TRET':
                     for tablerow in range(2,len(self.tables[table])):
                         if 'TRET_SHST' in self.tables[table].keys():
-                            if self.tables[table]['TRET_SHST'][tablerow] == '':
+                            if self.tables[table]['TRET_SHST'][tablerow] == '' and self.tables[table]['TRET_DEVF'][tablerow] != '':
                                 self.tables[table]['TRET_SHST'][tablerow] = round(float(self.tables[table]['TRET_DEVF'][tablerow]) / 2)
 
 
@@ -668,7 +670,8 @@ by pressing "Fix DICT errors".''')
                         self.tables[table].insert(8,'Depth','')
                     if table == 'TRIT':
                         for tablerow in range(2,len(self.tables[table])):
-                            self.tables[table]['TRIT_DEVF'][tablerow] = round(float(self.tables[table]['TRIT_DEVF'][tablerow]))
+                            if self.tables[table]['TRIT_DEVF'][tablerow]:
+                                self.tables[table]['TRIT_DEVF'][tablerow] = round(float(self.tables[table]['TRIT_DEVF'][tablerow]))
                             if self.tables[table]['TRIT_TESN'][tablerow] == '':
                                 self.tables[table]['TRIT_TESN'][tablerow] = 1
                     for tablerow in range(2,len(self.tables[table])):
