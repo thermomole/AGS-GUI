@@ -58,7 +58,7 @@
 
 <br><br>
 
-Designed for Geoquip-Marine.
+Designed for [Geoquip-Marine](https://www.geoquip-marine.com/).
 
 
 [![GM Logo](images/geobig.png)](https://www.geoquip-marine.com/)[![AGS Logo](images/AGSb.png)](https://www.ags.org.uk/)
