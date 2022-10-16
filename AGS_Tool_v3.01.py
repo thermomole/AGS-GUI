@@ -47,7 +47,7 @@ class Application(ct.CTkFrame):
         self.button_ags_checker.pack(pady=8, padx=10, side=tk.RIGHT)
         self.button_ags_checker.configure(state=tk.DISABLED)
 
-        self.del_tbl = ct.CTkButton(self.botframe, text='''Delete Non-Result Tables for gINT import''', command=self.del_non_lab_tables, 
+        self.del_tbl = ct.CTkButton(self.botframe, text='''Delete Non-Result Tables for gINT Import''', command=self.del_non_lab_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
         self.del_tbl.pack(pady=8, side=tk.TOP)
         self.del_tbl.configure(state=tk.DISABLED)
