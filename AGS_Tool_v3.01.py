@@ -29,7 +29,7 @@ class Application(ct.CTkFrame):
         self.button_showinfo.pack(pady=8)
         self.button_showinfo.configure(state=tk.DISABLED)
 
-        self.button_save_ags = ct.CTkButton(self, text="Save AGS file", command=self.save_ags, 
+        self.button_save_ags = ct.CTkButton(self, text="Save AGS File", command=self.save_ags, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.button_save_ags.pack(pady=8)
         self.button_save_ags.configure(state=tk.DISABLED)
@@ -54,7 +54,7 @@ class Application(ct.CTkFrame):
         self.dets.pack(pady=8)
         self.dets.configure(state=tk.DISABLED)
 
-        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result tables''', command=self.del_non_lab_tables, 
+        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result Tables''', command=self.del_non_lab_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.del_tbl.pack(pady=8)
         self.del_tbl.configure(state=tk.DISABLED)
@@ -104,7 +104,6 @@ class Application(ct.CTkFrame):
             'LPDN',
             'LPEN',
             'LRES',
-            'ERES',
             'LTCH',
             'LVAN',
             'RELD',
@@ -117,6 +116,7 @@ class Application(ct.CTkFrame):
             'IRSG',
             'IRST',
             'GCHM',
+            'ERES',
             'RESG',
             'REST',
             'RESV',
