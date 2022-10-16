@@ -25,6 +25,7 @@
 - [CPT Only Data Export](#cpt-only-data-export)
 - [Lab Only Data Export](#lab-only-data-export)
 
+<br>
 
 #### Open an AGS file.
   - Open any valid AGS files.
