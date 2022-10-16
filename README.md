@@ -78,7 +78,7 @@
     
 #### Lab Only Data Export.
   - Checks the groups found in the loaded AGS file against a set list of groups expected to contain laboratory test results.
-    - Deletes all non-essential tables, keeping only Lab data.
+    - Deletes all non-essential tables, keeping only Lab data as well Geology and Depth Remarks.
 
 <br><br>
 
