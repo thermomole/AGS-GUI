@@ -17,7 +17,7 @@ class Application(ct.CTkFrame):
         ct.CTkFrame.__init__(self, master, corner_radius=15, fg_color="#f0f0f0")
 
         root.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        master.geometry('375x470')
+        master.geometry('375x510')
         master.title("AGS Tool v3.01")
         
         self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
@@ -54,7 +54,8 @@ class Application(ct.CTkFrame):
         self.dets.pack(pady=8)
         self.dets.configure(state=tk.DISABLED)
 
-        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result Tables''', command=self.del_non_lab_tables, 
+        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result Tables
+for gINT import''', command=self.del_non_lab_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.del_tbl.pack(pady=8)
         self.del_tbl.configure(state=tk.DISABLED)
@@ -63,6 +64,11 @@ class Application(ct.CTkFrame):
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
         self.cpt_only.pack(pady=8)
         self.cpt_only.configure(state=tk.DISABLED)
+
+        self.lab_only = ct.CTkButton(self, text='''Lab Only Data Export''', command=self.export_lab_only, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        self.lab_only.pack(pady=8)
+        self.lab_only.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
         self.text.set("Please insert AGS file.")
@@ -105,6 +111,7 @@ class Application(ct.CTkFrame):
             'LPEN',
             'LRES',
             'LTCH',
+            'LTHC',
             'LVAN',
             'RELD',
             'SHBG',
@@ -129,7 +136,7 @@ class Application(ct.CTkFrame):
     def get_ags_file(self):
         self._disable_buttons()
 
-        app.master.geometry('375x470')
+        app.master.geometry('375x510')
         self.text.set("Please insert AGS file.")
         if self.box == True:
             self.listbox.pack_forget()
@@ -202,7 +209,6 @@ Please select an AGS with "Open File..."''')
 
         all_results = []
         error_tables = []
-        result_list = []
         self.result_list = []
         self.ags_table_reset()
 
@@ -279,21 +285,20 @@ Please select an AGS with "Open File..."''')
         if error_tables != []:
             print(f"Table(s) not found:  {str(error_tables)}")
 
-        result_list = pd.DataFrame.from_dict(all_results, orient='columns')
-        self.result_list = result_list
+        self.result_list = pd.DataFrame.from_dict(all_results, orient='columns')
 
         if self.box == False:
-            if result_list.empty:
+            if self.result_list.empty:
                 df_list = ["Error: No laboratory test results found."]
                 empty_df = pd.DataFrame.from_dict(df_list)
-                result_list = empty_df
+                self.result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
-            result_list.index.name = ' '
-            app.master.geometry('430x665')
+            self.result_list.index.name = ' '
+            app.master.geometry('430x710')
             self.listbox.tag_configure('tl', justify='left')
-            self.listbox.insert('end', result_list, 'tl')
+            self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
-            self.listbox.pack(padx=20)
+            self.listbox.pack(padx=20,pady=8)
             self.box = True
 
             self.button_export_results = ct.CTkButton(self, text="Export Results List", command=self.export_results, 
@@ -302,19 +307,19 @@ Please select an AGS with "Open File..."''')
 
             self.text.set("Results list ready to export.")
         else:
-            app.master.geometry('430x665')
+            app.master.geometry('430x710')
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.listbox.delete(1.0,100.0)
-            if result_list.empty:
+            if self.result_list.empty:
                 df_list = ["Error: No laboratory test results found."]
                 empty_df = pd.DataFrame.from_dict(df_list)
-                result_list = empty_df
-            result_list.index.name = ' '
+                self.result_list = empty_df
+            self.result_list.index.name = ' '
             self.listbox.tag_configure('tl', justify='left')
-            self.listbox.insert('end', result_list, 'tl')
+            self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
-            self.listbox.pack(padx=20)
+            self.listbox.pack(padx=20,pady=8)
             self.button_export_results.pack(pady=(8,8))
             pass
 
@@ -336,7 +341,7 @@ Please select an AGS with "Open File..."''')
     def start_pandasgui(self):
         self._disable_buttons()
 
-        app.master.geometry('375x470')
+        app.master.geometry('375x510')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         root.update()
@@ -365,7 +370,7 @@ Close GUI to resume.''')
 
     def check_ags(self):
         self._disable_buttons()
-        app.master.geometry('375x470')
+        app.master.geometry('375x510')
         if self.dict_fix == True:
             self.button_fix_dict.pack_forget()
             self.dict_fix = False
@@ -403,7 +408,7 @@ Please select an AGS with "Open File..."''')
                     
         except ValueError as e:
             print(f'AGS Checker ended unexpectedly: {e}')
-            app.master.geometry('375x570')
+            app.master.geometry('375x610')
             self.text.set('''Something went wrong.
 Make sure there are "key" fields in the dictionary!
 Save a new AGS file with a fixed dictionary 
@@ -434,7 +439,7 @@ by pressing "Fix DICT errors".''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            app.master.geometry('375x510')
+            app.master.geometry('375x550')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
             self.button_export_error.pack(pady=(8,8))
@@ -463,7 +468,7 @@ by pressing "Fix DICT errors".''')
         if self.temp_file_name == "":
             self.dict_fix = False
             self.button_fix_dict.pack_forget()
-            app.master.geometry('375x420')
+            app.master.geometry('375x460')
             self.text.set("Open an AGS file and choose what to do...")
             root.update()
             self.check_ags()
@@ -473,7 +478,7 @@ by pressing "Fix DICT errors".''')
         self._enable_buttons()
         self.dict_fix = False
         self.button_fix_dict.pack_forget()
-        app.master.geometry('375x470')
+        app.master.geometry('375x510')
         self.text.set("Try checking the file for errors again.")
         root.update()
 
@@ -911,7 +916,7 @@ Did you select the correct gint?''')
                     print(f"{str(table)} table deleted.")
 
             self.text.set('''CPT Only export ready.
-    Click "Save AGS file"''')
+Click "Save AGS file"''')
             root.update()
             print("CPT Data export ready. Click 'Save AGS file'.")
 
@@ -921,7 +926,47 @@ Check the AGS with "View data".''')
             root.update()
             print("No CPT groups found - did this AGS contain CPT data? Check the data with 'View data'.")
 
-        
+    
+    def get_lab_tables(self):
+        self.ags_table_reset()
+
+        self.lab_tables = self.result_tables
+
+        self.lab_tables.append('GEOL')
+        self.lab_tables.append('DREM')
+        self.lab_tables.append('DETL')
+
+        for table in self.lab_tables:
+            if table in list(self.tables):
+                self.ags_tables.append(table)
+
+
+    def export_lab_only(self):
+        self.get_lab_tables()
+
+        if not self.ags_tables == []:
+
+            for table in self.core_tables:
+                if table in list(self.tables):
+                    self.ags_tables.append(table)
+
+            for table in list(self.tables):
+                if table not in self.ags_tables:
+                    del self.tables[table]
+                    print(f"{str(table)} table deleted.")
+
+            self.text.set('''Lab Data & GEOL export ready.
+Click "Save AGS file"''')
+            root.update()
+            print("Lab Data & GEOL export ready. Click 'Save AGS file'.")
+
+        else:
+            self.text.set('''Could not find any Lab or GEOL tables.
+Check the AGS with "View data".''')
+            root.update()
+            print("No Lab or GEOL groups found - did this AGS contain CPT data? Check the data with 'View data'.")
+
+
     def _disable_buttons(self):
         self.button_open.configure(state=tk.DISABLED)
         self.button_showinfo.configure(state=tk.DISABLED)
@@ -932,6 +977,7 @@ Check the AGS with "View data".''')
         self.del_tbl.configure(state=tk.DISABLED)
         self.dets.configure(state=tk.DISABLED)
         self.cpt_only.configure(state=tk.DISABLED)
+        self.lab_only.configure(state=tk.DISABLED)
         
     def _enable_buttons(self):
         self.button_open.configure(state=tk.NORMAL)
@@ -943,6 +989,7 @@ Check the AGS with "View data".''')
         self.del_tbl.configure(state=tk.NORMAL)
         self.dets.configure(state=tk.NORMAL)
         self.cpt_only.configure(state=tk.NORMAL)
+        self.lab_only.configure(state=tk.NORMAL)
 
 root = ct.CTk()
 app = Application(root)
