@@ -27,10 +27,10 @@ class Application(ct.CTkFrame):
         corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
         self.button_open.pack(pady=8, padx=8)
 
-        self.button_showinfo = ct.CTkButton(self, text="View Data", command=self.start_pandasgui, 
+        self.pandas_gui = ct.CTkButton(self, text="View Data", command=self.start_pandasgui, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.button_showinfo.pack(pady=8)
-        self.button_showinfo.configure(state=tk.DISABLED)
+        self.pandas_gui.pack(pady=8)
+        self.pandas_gui.configure(state=tk.DISABLED)
 
         self.button_save_ags = ct.CTkButton(self, text="Save AGS File", command=self.save_ags, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
@@ -945,7 +945,7 @@ Check the AGS with "View data".''')
 
     def _disable_buttons(self):
         self.button_open.configure(state=tk.DISABLED)
-        self.button_showinfo.configure(state=tk.DISABLED)
+        self.pandas_gui.configure(state=tk.DISABLED)
         self.button_count_results.configure(state=tk.DISABLED)
         self.button_ags_checker.configure(state=tk.DISABLED)
         self.button_save_ags.configure(state=tk.DISABLED)
@@ -957,7 +957,7 @@ Check the AGS with "View data".''')
         
     def _enable_buttons(self):
         self.button_open.configure(state=tk.NORMAL)
-        self.button_showinfo.configure(state=tk.NORMAL)
+        self.pandas_gui.configure(state=tk.NORMAL)
         self.button_count_results.configure(state=tk.NORMAL)
         self.button_ags_checker.configure(state=tk.NORMAL)
         self.button_save_ags.configure(state=tk.NORMAL)
