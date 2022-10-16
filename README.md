@@ -1,5 +1,4 @@
 ### **Open, edit and check AGS for import to an access database (gINT).**
-
 <br>
 
 #### Steps for gINT Import:
