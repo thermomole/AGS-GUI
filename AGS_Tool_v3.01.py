@@ -17,74 +17,76 @@ class Application(ct.CTkFrame):
         ct.CTkFrame.__init__(self, master, corner_radius=15, fg_color="#f0f0f0")
 
         root.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        master.geometry('375x510')
+        master.geometry('450x435')
         master.title("AGS Tool v3.01")
+
+        self.botframe = ct.CTkFrame(root)
+        self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
         
         self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
-        corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
         self.button_open.pack(pady=8, padx=8)
 
         self.button_showinfo = ct.CTkButton(self, text="View Data", command=self.start_pandasgui, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
         self.button_showinfo.pack(pady=8)
         self.button_showinfo.configure(state=tk.DISABLED)
 
         self.button_save_ags = ct.CTkButton(self, text="Save AGS File", command=self.save_ags, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
         self.button_save_ags.pack(pady=8)
         self.button_save_ags.configure(state=tk.DISABLED)
 
         self.button_count_results = ct.CTkButton(self, text="Count Lab Results", command=self.count_lab_results, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.button_count_results.pack(pady=8)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        self.button_count_results.pack(pady=8, padx=10, side=tk.LEFT)
         self.button_count_results.configure(state=tk.DISABLED)
         
         self.button_ags_checker = ct.CTkButton(self, text="Check AGS for Errors", command=self.check_ags, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.button_ags_checker.pack(pady=8)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        self.button_ags_checker.pack(pady=8, padx=10, side=tk.RIGHT)
         self.button_ags_checker.configure(state=tk.DISABLED)
 
-        self.unique_id = ct.CTkButton(self, text='''Fix AGS from GM Lab''', command=self.match_unique_id_gqm, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.unique_id.pack(pady=8)
-        self.unique_id.configure(state=tk.DISABLED)
-
-        self.dets = ct.CTkButton(self, text='''Fix AGS from DETS''', command=self.match_unique_id_dets, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.dets.pack(pady=8)
-        self.dets.configure(state=tk.DISABLED)
-
-        self.del_tbl = ct.CTkButton(self, text='''Delete Non-Result Tables
-for gINT import''', command=self.del_non_lab_tables, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.del_tbl.pack(pady=8)
+        self.del_tbl = ct.CTkButton(self.botframe, text='''Delete Non-Result Tables for gINT import''', command=self.del_non_lab_tables, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
+        self.del_tbl.pack(pady=8, side=tk.TOP)
         self.del_tbl.configure(state=tk.DISABLED)
 
-        self.cpt_only = ct.CTkButton(self, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.cpt_only.pack(pady=8)
+        self.unique_id = ct.CTkButton(self.botframe, text='''Fix AGS from GM Lab''', command=self.match_unique_id_gqm, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        self.unique_id.pack(pady=8, side=tk.TOP)
+        self.unique_id.configure(state=tk.DISABLED)
+
+        self.dets = ct.CTkButton(self.botframe, text='''Fix AGS from DETS''', command=self.match_unique_id_dets, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        self.dets.pack(pady=8, side=tk.TOP)
+        self.dets.configure(state=tk.DISABLED)
+
+        self.cpt_only = ct.CTkButton(self.botframe, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        self.cpt_only.pack(pady=8, padx=10, side=tk.RIGHT)
         self.cpt_only.configure(state=tk.DISABLED)
 
-        self.lab_only = ct.CTkButton(self, text='''Lab Only Data Export''', command=self.export_lab_only, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-        self.lab_only.pack(pady=8)
+        self.lab_only = ct.CTkButton(self.botframe, text='''Lab Only Data Export''', command=self.export_lab_only, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        self.lab_only.pack(pady=8, padx=10, side=tk.LEFT)
         self.lab_only.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
-        self.text.set("Please insert AGS file.")
+        self.text.set('''Please insert AGS file.
+''')
 
         self.greeting = ct.CTkLabel(textvariable=self.text, text_font=("Tahoma",9))
-        self.greeting.pack(pady=10)
+        self.greeting.pack(pady=(24,8))
 
-        self.pack(padx=12,pady=2)
+        self.pack(padx=12)
 
         '''Empty variables created here to be used later. Also used to check previous actions, by checking if they're still empty in later functions'''
         self.temp_file_name = ''
         self.tables = None
         self.headings = None
         self.gui = None
-        self.box = False
-        self.dict_fix = False    
+        self.box = False   
         self.result_list = []
         self.error_list = []
         self.ags_tables = []
@@ -136,15 +138,13 @@ for gINT import''', command=self.del_non_lab_tables,
     def get_ags_file(self):
         self._disable_buttons()
 
-        app.master.geometry('375x510')
-        self.text.set("Please insert AGS file.")
+        app.master.geometry('450x435')
+        self.text.set('''Please insert AGS file.
+''')
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.box = False
-        if self.dict_fix == True:
-            self.button_fix_dict.pack_forget()
-            self.dict_fix = False
         if self.export == True:
             self.button_export_error.pack_forget()
             self.export = False
@@ -159,7 +159,8 @@ Please select an AGS with "Open File..."''')
             self.button_open.configure(state=tk.NORMAL)
             return
         else:
-            self.text.set("AGS file loaded.")
+            self.text.set('''AGS file loaded.
+''')
             root.update()
 
         try:
@@ -174,10 +175,6 @@ Please select an AGS with "Open File..."''')
 
     def count_lab_results(self):
         self._disable_buttons()
-
-        if self.dict_fix == True:
-            self.button_fix_dict.pack_forget()
-            self.dict_fix = False
 
         if self.export == True:
             self.button_export_error.pack_forget()
@@ -294,20 +291,21 @@ Please select an AGS with "Open File..."''')
                 self.result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
             self.result_list.index.name = ' '
-            app.master.geometry('430x710')
+            app.master.geometry('775x600')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
-            self.listbox.pack(padx=20,pady=8)
             self.box = True
 
             self.button_export_results = ct.CTkButton(self, text="Export Results List", command=self.export_results, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-            self.button_export_results.pack(pady=(8,8))
+            self.button_export_results.pack(pady=(8,8), side=tk.BOTTOM)
+            self.listbox.pack(padx=20,pady=8, side=tk.BOTTOM)
 
-            self.text.set("Results list ready to export.")
+            self.text.set('''Results list ready to export.
+''')
         else:
-            app.master.geometry('430x710')
+            app.master.geometry('775x600')
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.listbox.delete(1.0,100.0)
@@ -319,8 +317,8 @@ Please select an AGS with "Open File..."''')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
-            self.listbox.pack(padx=20,pady=8)
-            self.button_export_results.pack(pady=(8,8))
+            self.button_export_results.pack(pady=(8,8), side=tk.BOTTOM)
+            self.listbox.pack(padx=20,pady=8, side=tk.BOTTOM)
             pass
 
         self._enable_buttons()
@@ -341,7 +339,7 @@ Please select an AGS with "Open File..."''')
     def start_pandasgui(self):
         self._disable_buttons()
 
-        app.master.geometry('375x510')
+        app.master.geometry('450x435')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         root.update()
@@ -358,7 +356,8 @@ Close GUI to resume.''')
             self.gui = show(**self.tables)
         except:
             pass
-        self.text.set("You can now save the edited AGS.")
+        self.text.set('''You can now save the edited AGS.
+''')
         root.update()
         updated_tables = self.gui.get_dataframes()
         self.tables = updated_tables
@@ -370,13 +369,7 @@ Close GUI to resume.''')
 
     def check_ags(self):
         self._disable_buttons()
-        app.master.geometry('375x510')
-        if self.dict_fix == True:
-            self.button_fix_dict.pack_forget()
-            self.dict_fix = False
-        if self.dict_fix == True and not self.temp_file_name == '':
-            self.button_fix_dict.pack_forget()
-            self.dict_fix = False
+        app.master.geometry('450x435')
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -384,7 +377,8 @@ Close GUI to resume.''')
         if self.export == True:
             self.button_export_error.pack_forget()
             self.export = False
-        self.text.set("Checking AGS for errors...")
+        self.text.set('''Checking AGS for errors...
+''')
         root.update()
 
         try:
@@ -408,15 +402,6 @@ Please select an AGS with "Open File..."''')
                     
         except ValueError as e:
             print(f'AGS Checker ended unexpectedly: {e}')
-            app.master.geometry('375x610')
-            self.text.set('''Something went wrong.
-Make sure there are "key" fields in the dictionary!
-Save a new AGS file with a fixed dictionary 
-by pressing "Fix DICT errors".''')
-            self.button_fix_dict = ct.CTkButton(self, text="Fix DICT errors", command=self.fix_dict, 
-            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-            self.button_fix_dict.pack(pady=(8,8))
-            self.dict_fix = True
             return
         
         if not errors:
@@ -433,17 +418,21 @@ by pressing "Fix DICT errors".''')
                 continue
                     
             for error in items:
-                self.text.set("Error(s) found, check output or click 'Export Error Log'.")
+                self.text.set('''Error(s) found, check output or click 'Export Error Log'.
+''')
                 root.update()
                 print(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            app.master.geometry('375x550')
+            app.master.geometry('500x450')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
-            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
-            self.button_export_error.pack(pady=(8,8))
+            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
+            self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
             self.export = True
+            self.text.set('''Error(s) found, check output or click 'Export Error Log'.
+''')
+            root.update()
 
         self._enable_buttons()
 
@@ -461,27 +450,6 @@ by pressing "Fix DICT errors".''')
 
         self._enable_buttons()
 
-    def fix_dict(self):
-        self.tables['DICT']['DICT_STAT'].replace(to_replace="REQUIRED",value="KEY", inplace=True)
-        self._disable_buttons()
-        self.temp_file_name = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags",title="Save file as...")
-        if self.temp_file_name == "":
-            self.dict_fix = False
-            self.button_fix_dict.pack_forget()
-            app.master.geometry('375x460')
-            self.text.set("Open an AGS file and choose what to do...")
-            root.update()
-            self.check_ags()
-            return
-        AGS4.dataframe_to_AGS4(self.tables, self.headings, self.temp_file_name)
-        print('Done.')
-        self._enable_buttons()
-        self.dict_fix = False
-        self.button_fix_dict.pack_forget()
-        app.master.geometry('375x510')
-        self.text.set("Try checking the file for errors again.")
-        root.update()
-
 
     def save_ags(self):
         self._disable_buttons()
@@ -491,7 +459,8 @@ by pressing "Fix DICT errors".''')
             return
         AGS4.dataframe_to_AGS4(self.tables, self.tables, newFileName)
         print('Done.')
-        self.text.set("AGS saved.")
+        self.text.set('''AGS saved.
+''')
         root.update()
 
         self._enable_buttons()
@@ -506,7 +475,8 @@ by pressing "Fix DICT errors".''')
             self._enable_buttons()
             return
 
-        self.text.set("Getting gINT, please wait...")
+        self.text.set('''Getting gINT, please wait...
+''')
         root.update()
 
         try:
@@ -538,12 +508,14 @@ by pressing "Fix DICT errors".''')
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
-            self.text.set("AGS file loaded.")
+            self.text.set('''AGS file loaded.
+''')
             root.update()
             return
 
 
-        self.text.set("Matching AGS to gINT, please wait...")
+        self.text.set('''Matching AGS to gINT, please wait...
+''')
         root.update()
         print(f"Matching GM Lab AGS to gINT... {self.gint_location}") 
 
@@ -721,7 +693,8 @@ by pressing "Fix DICT errors".''')
                 pass
 
         if matched:
-            self.text.set("Matching complete! Click: 'Save AGS file'.")
+            self.text.set('''Matching complete! Click: 'Save AGS file'.
+''')
             root.update()
             print("Matching complete!")
             self._enable_buttons()
@@ -746,11 +719,13 @@ Did you select the correct gINT or AGS?''')
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
-            self.text.set("AGS file loaded.")
+            self.text.set('''AGS file loaded.
+''')
             root.update()
             return
 
-        self.text.set("Matching AGS to gINT, please wait...")
+        self.text.set('''Matching AGS to gINT, please wait...
+''')
         root.update()
         print(f"Matching DETS AGS to gINT... {self.gint_location}") 
 
@@ -850,7 +825,8 @@ Did you select the correct gINT or AGS?''')
                 pass
 
         if matched:
-            self.text.set("Matching complete! Click: 'Save AGS file'.")
+            self.text.set('''Matching complete! Click: 'Save AGS file'.
+''')
             root.update()
             print("Matching complete!")
             self._enable_buttons()
