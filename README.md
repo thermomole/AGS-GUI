@@ -32,7 +32,7 @@
 #### Count lab results.
   - This checks certain parent groups for specific fields relating to test type.
     - For triaxial results, like unconsolidated undrained, the sample condition is used to distinguish test type.
-    - The list of groups and their test types can be exported to a .txt file.
+    - Totals of test types for each group can be exported to a .txt file.
 
 #### Check AGS for errors.
   - This will use the AGS standard dictionary to check the file for errors.
