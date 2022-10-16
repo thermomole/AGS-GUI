@@ -14,6 +14,18 @@
   
 <br>
 
+- [Open an AGS file](#open-an-ags-file)
+- [View Data](#view-data)
+- [Save AGS file](#save-ags-file)
+- [Count Lab Results](#count-lab-results)
+- [Check AGS for Errors](#check-ags-for-errors)
+- [Fix AGS from GM Lab](#fix-ags-from-gm-lab)
+- [Fix AGS from DETS](#fix-ags-from-dets)
+- [Delete Non-Result Tables for gINT Import](#delete-non-result-tables-for-gint-import)
+- [CPT Only Data Export](#cpt-only-data-export)
+- [Lab Only Data Export](#lab-only-data-export)
+
+
 #### Open an AGS file.
   - Open any valid AGS files.
     - There may be an error as follows: Error: Line x does not have the same number of entries as the HEADING.
@@ -29,12 +41,12 @@
     - If a filter was used in PandasGUI, it will save the new AGS with the filter applied.
     - If non-result tables were deleted, they will be deleted in the saved file.
 
-#### Count lab results.
+#### Count Lab Results.
   - This checks certain parent groups for specific fields relating to test type.
     - For triaxial results, like unconsolidated undrained, the sample condition is used to distinguish test type.
     - Totals of test types for each group can be exported to a .txt file.
 
-#### Check AGS for errors.
+#### Check AGS for Errors.
   - This will use the AGS standard dictionary to check the file for errors.
   - The AGS version in the TRAN group will be used.
   - Version AGS 4+ supported (e.g. '4.1.1', '4.1', '4.0.4', '4.0.3', '4.0').
