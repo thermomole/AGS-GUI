@@ -298,7 +298,7 @@ Please select an AGS with "Open File..."''')
             self.box = True
 
             self.button_export_results = ct.CTkButton(self, text="Export Results List", command=self.export_results, 
-            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9))
+            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
             self.button_export_results.pack(pady=(8,8), side=tk.BOTTOM)
             self.listbox.pack(padx=20,pady=8, side=tk.BOTTOM)
 
@@ -425,7 +425,7 @@ Please select an AGS with "Open File..."''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            app.master.geometry('500x450')
+            app.master.geometry('550x450')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
             self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
