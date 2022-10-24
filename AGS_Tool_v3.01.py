@@ -662,6 +662,8 @@ Please select an AGS with "Open File..."''')
                             self.tables[table]['CONG_TYPE'][tablerow] = 'CRS'
                         if "intact" in str(self.tables[table]['CONG_COND'][tablerow].lower()):
                             self.tables[table]['CONG_COND'][tablerow] = "UNDISTURBED"
+                        if "oed" in str(self.tables[table]['CONG_TYPE'][tablerow].lower()):
+                            self.tables[table]['CONG_TYPE'][tablerow] = "IL OEDOMETER"
                         self.tables[table]['CONG_COND'][tablerow] = str(self.tables[table]['CONG_COND'][tablerow].upper())
 
 
