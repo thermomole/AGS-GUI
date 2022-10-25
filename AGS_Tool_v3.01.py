@@ -218,9 +218,17 @@ Please select an AGS with "Open File..."''')
 
                 try:
                     location = list(self.tables[table]['LOCA_ID'])
+                    location.pop(0)
+                    location.pop(0)
                     samp_id = list(self.tables[table]['SAMP_ID'])
+                    samp_id.pop(0)
+                    samp_id.pop(0)
                     samp_ref = list(self.tables[table]['SPEC_REF'])
+                    samp_ref.pop(0)
+                    samp_ref.pop(0)
                     samp_depth = list(self.tables[table]['SPEC_DPTH'])
+                    samp_depth.pop(0)
+                    samp_depth.pop(0)
                     test_type = ""
                     if 'GCHM' in table:
                         test_type = list(self.tables[table]['GCHM_CODE'])
@@ -249,6 +257,8 @@ Please select an AGS with "Open File..."''')
                         test_type_df = pd.DataFrame.from_dict(test_type)
                     elif 'GRAT'in table:
                         test_type = list(self.tables[table]['GRAT_TYPE'])
+                        test_type.pop(0)
+                        test_type.pop(0)
                         samp_with_table = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
                         samp_with_table.pop(0)
                         samp_with_table.pop(0)
@@ -257,6 +267,8 @@ Please select an AGS with "Open File..."''')
                         result_table.columns = ['POINT','ID','REF','DEPTH','TYPE']
                         tt = result_table['TYPE'].to_list()
                         test_type_df = pd.DataFrame.from_dict(tt)
+
+                    #bh_results = list(zip(location,samp_id,samp_ref,samp_depth,test_type))		    
 
                     if not test_type == "":
                         num_test = test_type_df.value_counts()
@@ -276,6 +288,9 @@ Please select an AGS with "Open File..."''')
                     all_results.append(type_list)
                     print(str(table) + " - " + str(type_list))
 
+                    #bh_df = pd.DataFrame.from_dict(type_list)
+                    #results_with_samp_and_type = pd.concat([results_with_samp_and_type, bh_df])
+
                 except Exception as e:
                     error_tables.append(str(e))
 
@@ -283,6 +298,7 @@ Please select an AGS with "Open File..."''')
             print(f"Table(s) not found:  {str(error_tables)}")
 
         self.result_list = pd.DataFrame.from_dict(all_results, orient='columns')
+        #results_with_samp_and_type.to_csv("all_results.csv", index_label=False)	
 
         if self.box == False:
             if self.result_list.empty:
