@@ -13,14 +13,14 @@ class Application(ct.CTkFrame):
     ct.set_appearance_mode("system")
     ct.set_default_color_theme("dark-blue")
 
-    def __init__(self, root):
-        ct.CTkFrame.__init__(self, corner_radius=15, fg_color="#f0f0f0")
+    def __init__(self):
+        super(Application, self).__init__()
 
-        root.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        root.geometry('450x435')
-        root.title("AGS Tool v3.01")
+        window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
+        window.geometry('450x435')
+        window.title("AGS Tool v3.01")
 
-        self.botframe = ct.CTkFrame(root)
+        self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
         
         self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
@@ -138,7 +138,7 @@ class Application(ct.CTkFrame):
     def get_ags_file(self):
         self._disable_buttons()
 
-        root.geometry('450x435')
+        window.geometry('450x435')
         self.text.set('''Please insert AGS file.
 ''')
         if self.box == True:
@@ -161,7 +161,7 @@ Please select an AGS with "Open File..."''')
         else:
             self.text.set('''AGS file loaded.
 ''')
-            root.update()
+            window.update()
 
         try:
             self.tables, self.headings = AGS4.AGS4_to_dataframe(self.file_location)
@@ -315,7 +315,7 @@ Please select an AGS with "Open File..."''')
                 self.result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
             self.result_list.index.name = ' '
-            root.geometry('775x600')
+            window.geometry('775x600')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
@@ -329,7 +329,7 @@ Please select an AGS with "Open File..."''')
             self.text.set('''Results list ready to export.
 ''')
         else:
-            root.geometry('775x600')
+            window.geometry('775x600')
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.listbox.delete(1.0,100.0)
@@ -363,10 +363,10 @@ Please select an AGS with "Open File..."''')
     def start_pandasgui(self):
         self._disable_buttons()
 
-        root.geometry('450x435')
+        window.geometry('450x435')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
-        root.update()
+        window.update()
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -374,7 +374,7 @@ Close GUI to resume.''')
         if self.export == True:
             self.button_export_error.pack_forget()
             self.export = False
-        root.update()
+        window.update()
         
         try:
             self.gui = show(**self.tables)
@@ -382,7 +382,7 @@ Close GUI to resume.''')
             pass
         self.text.set('''You can now save the edited AGS.
 ''')
-        root.update()
+        window.update()
         updated_tables = self.gui.get_dataframes()
         self.tables = updated_tables
         for table in self.result_tables:
@@ -393,7 +393,7 @@ Close GUI to resume.''')
 
     def check_ags(self):
         self._disable_buttons()
-        root.geometry('450x435')
+        window.geometry('450x435')
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -403,7 +403,7 @@ Close GUI to resume.''')
             self.export = False
         self.text.set('''Checking AGS for errors...
 ''')
-        root.update()
+        window.update()
 
         try:
             if not self.file_location == '' and self.temp_file_name == '':
@@ -431,7 +431,7 @@ Please select an AGS with "Open File..."''')
         if not errors:
             print("No errors found. Yay.")
             self.text.set("AGS file contains no errors!")
-            root.update()
+            window.update()
             return
         
         for rule, items in errors.items():
@@ -444,19 +444,19 @@ Please select an AGS with "Open File..."''')
             for error in items:
                 self.text.set('''Error(s) found, check output or click 'Export Error Log'.
 ''')
-                root.update()
+                window.update()
                 print(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            root.geometry('550x450')
+            window.geometry('550x450')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
             self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
             self.export = True
             self.text.set('''Error(s) found, check output or click 'Export Error Log'.
 ''')
-            root.update()
+            window.update()
 
         self._enable_buttons()
 
@@ -485,7 +485,7 @@ Please select an AGS with "Open File..."''')
         print('Done.')
         self.text.set('''AGS saved.
 ''')
-        root.update()
+        window.update()
 
         self._enable_buttons()
 
@@ -501,7 +501,7 @@ Please select an AGS with "Open File..."''')
 
         self.text.set('''Getting gINT, please wait...
 ''')
-        root.update()
+        window.update()
 
         try:
             conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+self.gint_location+';')
@@ -534,13 +534,13 @@ Please select an AGS with "Open File..."''')
         if not self.gint_location or self.gint_location == '':
             self.text.set('''AGS file loaded.
 ''')
-            root.update()
+            window.update()
             return
 
 
         self.text.set('''Matching AGS to gINT, please wait...
 ''')
-        root.update()
+        window.update()
         print(f"Matching GM Lab AGS to gINT... {self.gint_location}") 
 
         self.get_ags_tables()
@@ -721,18 +721,18 @@ Please select an AGS with "Open File..."''')
         if matched:
             self.text.set('''Matching complete! Click: 'Save AGS file'.
 ''')
-            root.update()
+            window.update()
             print("Matching complete!")
             self._enable_buttons()
             if self.error == True:
                 self.text.set('''gINT matches, Lab doesn't.
 Re-open the AGS and select correct lab.''')
-                root.update()
+                window.update()
                 print("GCHM or ERES table(s) found - are you sure this AGS is from GM Lab? Try matching again.")
         else:    
             self.text.set('''Couldn't match sample data.
 Did you select the correct gINT or AGS?''')
-            root.update()
+            window.update()
             print("Unable to match sample data from gINT.") 
             self._enable_buttons()
             
@@ -747,12 +747,12 @@ Did you select the correct gINT or AGS?''')
         if not self.gint_location or self.gint_location == '':
             self.text.set('''AGS file loaded.
 ''')
-            root.update()
+            window.update()
             return
 
         self.text.set('''Matching AGS to gINT, please wait...
 ''')
-        root.update()
+        window.update()
         print(f"Matching DETS AGS to gINT... {self.gint_location}") 
 
         self.get_ags_tables()
@@ -853,18 +853,18 @@ Did you select the correct gINT or AGS?''')
         if matched:
             self.text.set('''Matching complete! Click: 'Save AGS file'.
 ''')
-            root.update()
+            window.update()
             print("Matching complete!")
             self._enable_buttons()
             if self.error == True:
                 self.text.set('''gINT matches, Lab doesn't.
 Re-open the AGS and select correct lab.''')
-                root.update()
+                window.update()
                 print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
         else:
             self.text.set('''Couldn't match sample data.
 Did you select the correct gint?''')
-            root.update()
+            window.update()
             print("Unable to match sample data from gINT.")    
             self._enable_buttons()
 
@@ -919,13 +919,13 @@ Did you select the correct gint?''')
 
             self.text.set('''CPT Only export ready.
 Click "Save AGS file"''')
-            root.update()
+            window.update()
             print("CPT Data export ready. Click 'Save AGS file'.")
 
         else:
             self.text.set('''Could not find any CPT tables.
 Check the AGS with "View data".''')
-            root.update()
+            window.update()
             print("No CPT groups found - did this AGS contain CPT data? Check the data with 'View data'.")
 
     
@@ -959,13 +959,13 @@ Check the AGS with "View data".''')
 
             self.text.set('''Lab Data & GEOL export ready.
 Click "Save AGS file"''')
-            root.update()
+            window.update()
             print("Lab Data & GEOL export ready. Click 'Save AGS file'.")
 
         else:
             self.text.set('''Could not find any Lab or GEOL tables.
 Check the AGS with "View data".''')
-            root.update()
+            window.update()
             print("No Lab or GEOL groups found - did this AGS contain CPT data? Check the data with 'View data'.")
 
 
@@ -993,6 +993,6 @@ Check the AGS with "View data".''')
         self.cpt_only.configure(state=tk.NORMAL)
         self.lab_only.configure(state=tk.NORMAL)
 
-root = ct.CTk()
-app = Application(root)
-root.mainloop()
+window = ct.CTk()
+app = Application()
+window.mainloop()
