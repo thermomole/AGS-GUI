@@ -180,6 +180,8 @@ Please select an AGS with "Open File..."''')
             self.button_export_error.pack_forget()
             self.export = False
 
+        results_with_samp_and_type = pd.DataFrame()
+
         lab_tables = [
             'TRIG',
             'LNMC',
@@ -267,8 +269,12 @@ Please select an AGS with "Open File..."''')
                         result_table.columns = ['POINT','ID','REF','DEPTH','TYPE']
                         tt = result_table['TYPE'].to_list()
                         test_type_df = pd.DataFrame.from_dict(tt)
+                    
+                    samples = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
+                    samples.insert(0,table)
+                    table_results = pd.DataFrame.from_dict(samples)
 
-                    #bh_results = list(zip(location,samp_id,samp_ref,samp_depth,test_type))		    
+
 
                     if not test_type == "":
                         num_test = test_type_df.value_counts()
@@ -282,14 +288,16 @@ Please select an AGS with "Open File..."''')
                         count = list(zip(head,val))
                     else:
                         count = str(len(samp_id) - 2)
+                        sample = list(zip(location,samp_id,samp_ref,samp_depth))
+                        table_results_2 = pd.DataFrame.from_dict(sample)
+                        table_results = pd.concat([table_results, table_results_2])
                     type_list = []
                     type_list.append(str(table))
                     type_list.append(count)
                     all_results.append(type_list)
                     print(str(table) + " - " + str(type_list))
 
-                    #bh_df = pd.DataFrame.from_dict(type_list)
-                    #results_with_samp_and_type = pd.concat([results_with_samp_and_type, bh_df])
+                    results_with_samp_and_type = pd.concat([results_with_samp_and_type, table_results])
 
                 except Exception as e:
                     error_tables.append(str(e))
@@ -298,7 +306,7 @@ Please select an AGS with "Open File..."''')
             print(f"Table(s) not found:  {str(error_tables)}")
 
         self.result_list = pd.DataFrame.from_dict(all_results, orient='columns')
-        #results_with_samp_and_type.to_csv("all_results.csv", index_label=False)	
+        results_with_samp_and_type.to_csv("all_results.csv", index=False)	
 
         if self.box == False:
             if self.result_list.empty:
