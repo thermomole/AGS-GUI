@@ -2,17 +2,15 @@ import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 from python_ags4 import AGS4
 from pandasgui import show
+from statistics import mean
 import pandas as pd
 import customtkinter as ct
 import pyodbc
 import warnings
 warnings.filterwarnings("ignore")
 
-
 # add check when defining testing lab for each table to check if string is in lab
 # if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
-
-# MAKE AVERAGE SHEAR WAVE VEL FOR BE
 
 class Application(ct.CTkFrame):
 
@@ -739,6 +737,29 @@ Please select an AGS with "Open File..."''')
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                 self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+
+
+                '''LDYN'''
+                if table == 'LDYN':
+                    # if 'Depth' not in self.tables[table]:
+                    #     self.tables[table].insert(8,'Depth','')
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                if self.tables[table]['LDYN_SWAV1SS'][tablerow] == "":
+                                    self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1'][tablerow],
+                                    self.tables[table]['LDYN_SWAV2'][tablerow],
+                                    self.tables[table]['LDYN_SWAV3'][tablerow],
+                                    self.tables[table]['LDYN_SWAV4'][tablerow],
+                                    self.tables[table]['LDYN_SWAV5'][tablerow]
+                                    ])
+                                else:
+                                    self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1SS'][tablerow],
+                                    self.tables[table]['LDYN_SWAV2SS'][tablerow],
+                                    self.tables[table]['LDYN_SWAV3SS'][tablerow],
+                                    self.tables[table]['LDYN_SWAV4SS'][tablerow],
+                                    self.tables[table]['LDYN_SWAV5SS'][tablerow]
+                                    ])
 
                             
                 '''Drop columns'''
