@@ -746,20 +746,21 @@ Please select an AGS with "Open File..."''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                if self.tables[table]['LDYN_SWAV1SS'][tablerow] == "":
-                                    self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1'][tablerow],
-                                    self.tables[table]['LDYN_SWAV2'][tablerow],
-                                    self.tables[table]['LDYN_SWAV3'][tablerow],
-                                    self.tables[table]['LDYN_SWAV4'][tablerow],
-                                    self.tables[table]['LDYN_SWAV5'][tablerow]
-                                    ])
-                                else:
-                                    self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1SS'][tablerow],
-                                    self.tables[table]['LDYN_SWAV2SS'][tablerow],
-                                    self.tables[table]['LDYN_SWAV3SS'][tablerow],
-                                    self.tables[table]['LDYN_SWAV4SS'][tablerow],
-                                    self.tables[table]['LDYN_SWAV5SS'][tablerow]
-                                    ])
+                                if 'LDYN_SWAV1' in self.tables[table] or 'LDYN_SWAV1SS' in self.tables[table]:
+                                    if self.tables[table]['LDYN_SWAV1SS'][tablerow] == "":
+                                        self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1'][tablerow],
+                                        self.tables[table]['LDYN_SWAV2'][tablerow],
+                                        self.tables[table]['LDYN_SWAV3'][tablerow],
+                                        self.tables[table]['LDYN_SWAV4'][tablerow],
+                                        self.tables[table]['LDYN_SWAV5'][tablerow]
+                                        ])
+                                    else:
+                                        self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1SS'][tablerow],
+                                        self.tables[table]['LDYN_SWAV2SS'][tablerow],
+                                        self.tables[table]['LDYN_SWAV3SS'][tablerow],
+                                        self.tables[table]['LDYN_SWAV4SS'][tablerow],
+                                        self.tables[table]['LDYN_SWAV5SS'][tablerow]
+                                        ])
 
                             
                 '''Drop columns'''
