@@ -12,6 +12,8 @@ warnings.filterwarnings("ignore")
 # add check when defining testing lab for each table to check if string is in lab
 # if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
 
+# MAKE AVERAGE SHEAR WAVE VEL FOR BE
+
 class Application(ct.CTkFrame):
 
     ct.set_appearance_mode("system")
@@ -727,6 +729,16 @@ Please select an AGS with "Open File..."''')
                                     self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow] + 0.01,'.2f')
                                 else:
                                     self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+
+
+                '''RELD'''
+                if table == 'RELD':
+                    if 'Depth' not in self.tables[table]:
+                        self.tables[table].insert(8,'Depth','')
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
 
                             
                 '''Drop columns'''
