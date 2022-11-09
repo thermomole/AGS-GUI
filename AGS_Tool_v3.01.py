@@ -21,7 +21,7 @@ class Application(ct.CTkFrame):
         super(Application, self).__init__()
 
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        window.geometry('450x525')
+        window.geometry('450x610')
         window.title("AGS Tool v3.01")
 
         self.botframe = ct.CTkFrame(window)
@@ -80,6 +80,11 @@ class Application(ct.CTkFrame):
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
         self.geolabs.pack(pady=8, side=tk.TOP)
         self.geolabs.configure(state=tk.DISABLED)
+
+        self.fugro = ct.CTkButton(self.botframe, text='''Fix AGS from Geolabs (FUGRO)''', command=self.match_unique_id_geolabs_fugro, 
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        self.fugro.pack(pady=8, side=tk.TOP)
+        self.fugro.configure(state=tk.DISABLED)
 
         self.cpt_only = ct.CTkButton(self.botframe, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
@@ -151,13 +156,17 @@ class Application(ct.CTkFrame):
             'TORV',
             'PTST',
             'RPLT',
+            'RCAG',
+            'RDEN',
+            'RUCS',
+            'LHVN',
             ]
 
 
     def get_ags_file(self):
         self._disable_buttons()
 
-        window.geometry('450x525')
+        window.geometry('450x610')
         self.text.set('''Please insert AGS file.
 ''')
         if self.box == True:
@@ -334,7 +343,7 @@ Please select an AGS with "Open File..."''')
                 self.result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
             self.result_list.index.name = ' '
-            window.geometry('775x675')
+            window.geometry('775x760')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
@@ -348,7 +357,7 @@ Please select an AGS with "Open File..."''')
             self.text.set('''Results list ready to export.
 ''')
         else:
-            window.geometry('775x675')
+            window.geometry('775x760')
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.listbox.delete(1.0,100.0)
@@ -382,7 +391,7 @@ Please select an AGS with "Open File..."''')
     def start_pandasgui(self):
         self._disable_buttons()
 
-        window.geometry('450x525')
+        window.geometry('450x610')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         window.update()
@@ -412,7 +421,7 @@ Close GUI to resume.''')
 
     def check_ags(self):
         self._disable_buttons()
-        window.geometry('450x525')
+        window.geometry('450x610')
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -468,7 +477,7 @@ Please select an AGS with "Open File..."''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            window.geometry('550x525')
+            window.geometry('550x610')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
             self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
@@ -748,28 +757,29 @@ Please select an AGS with "Open File..."''')
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                 if 'LDYN_SWAV1' in self.tables[table] or 'LDYN_SWAV1SS' in self.tables[table]:
                                     if self.tables[table]['LDYN_SWAV1SS'][tablerow] == "":
-                                        self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1'][tablerow],
-                                        self.tables[table]['LDYN_SWAV2'][tablerow],
-                                        self.tables[table]['LDYN_SWAV3'][tablerow],
-                                        self.tables[table]['LDYN_SWAV4'][tablerow],
-                                        self.tables[table]['LDYN_SWAV5'][tablerow]
-                                        ])
+                                        self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(self.tables[table]['LDYN_SWAV1'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV2'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV3'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV4'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV5'][tablerow])
+                                        ]))
                                     else:
-                                        self.tables[table]['LDYN_SWAV'][tablerow] = mean([self.tables[table]['LDYN_SWAV1SS'][tablerow],
-                                        self.tables[table]['LDYN_SWAV2SS'][tablerow],
-                                        self.tables[table]['LDYN_SWAV3SS'][tablerow],
-                                        self.tables[table]['LDYN_SWAV4SS'][tablerow],
-                                        self.tables[table]['LDYN_SWAV5SS'][tablerow]
-                                        ])
-
-                            
-                '''Drop columns'''
-                if "match_id" in self.tables[table]:
-                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
+                                        self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(self.tables[table]['LDYN_SWAV1SS'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV2SS'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV3SS'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV4SS'][tablerow]),
+                                        int(self.tables[table]['LDYN_SWAV5SS'][tablerow])
+                                        ]))
+                            if self.tables[table]['LDYN_REM'][tablerow] == "":
+                                self.tables[table]['LDYN_REM'][tablerow] = "Bender Element"
 
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
+
+            '''Drop columns'''
+            if "match_id" in self.tables[table]:
+                self.tables[table].drop(['match_id'], axis=1, inplace=True)
 
         if matched:
             self.text.set('''Matching complete! Click: 'Save AGS file'.
@@ -1184,6 +1194,7 @@ Did you select the correct gint?''')
                 except:
                     pass
 
+
                 gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
@@ -1192,6 +1203,7 @@ Did you select the correct gint?''')
                 for row in range (2,len(self.tables[table])):
                     self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TOP'][row])
 
+        
                 try:
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
@@ -1228,6 +1240,136 @@ Did you select the correct gint?''')
                     '''Drop columns'''
                 if "match_id" in self.tables[table]:
                     self.tables[table].drop(['match_id'], axis=1, inplace=True)
+
+            except Exception as e:
+                print(f"Couldn't find table or field, skipping... {str(e)}")
+                pass
+
+        if matched:
+            self.text.set('''Matching complete! Click: 'Save AGS file'.
+''')
+            window.update()
+            print("Matching complete!")
+            self._enable_buttons()
+            if self.error == True:
+                self.text.set('''gINT matches, Lab doesn't.
+Re-open the AGS and select correct lab.''')
+                window.update()
+                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
+        else:
+            self.text.set('''Couldn't match sample data.
+Did you select the correct gint?''')
+            window.update()
+            print("Unable to match sample data from gINT.")    
+            self._enable_buttons()
+
+
+
+
+    def match_unique_id_geolabs_fugro(self):
+        self._disable_buttons()
+        self.get_gint()
+        matched = False
+        self.error = False
+
+        if not self.gint_location or self.gint_location == '':
+            self.text.set('''AGS file loaded.
+''')
+            window.update()
+            return
+
+        self.text.set('''Matching AGS to gINT, please wait...
+''')
+        window.update()
+        print(f"Matching Geolabs AGS to gINT... {self.gint_location}") 
+
+        self.get_ags_tables()
+
+        for table in self.ags_tables:
+            try:
+                try:
+                    if 'match_id' not in self.get_spec():
+                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
+                except:
+                    pass
+                
+                try:
+                    if 'match_id' not in self.tables[table]:
+                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
+                except:
+                    pass
+                
+                if 'Depth' not in self.tables[table]:
+                    self.tables[table].insert(8,'Depth','')
+
+
+                gint_rows = self.get_spec().shape[0]
+
+                '''Using for all GQM boreholes'''
+                # for row in range (0,gint_rows):
+                #     self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(format(self.get_spec()['Depth'][row],'.2f'))
+
+                # for row in range (2,len(self.tables[table])):
+                #     self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TOP'][row])
+
+                '''Using for Fugro Boreholes (50HZ samples have different SAMP format including dupe depths)'''
+                for row in range (0,gint_rows):
+                    self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(format(self.get_spec()['SAMP_Depth'][row],'.2f')) + str(self.get_spec()['SAMP_REF'][row])
+
+                for row in range (2,len(self.tables[table])):
+                    self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TOP'][row]) + str(self.tables[table]['SAMP_REF'][row])
+
+
+                try:
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                matched = True
+                                self.tables[table]['Depth'][tablerow] = self.tables[table]['SPEC_DPTH'][tablerow]
+                                self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
+                                self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+                                self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+                                
+                                # for x in self.tables[table].keys():
+                                #     if "LAB" in x:
+                                #         self.tables[table][x][tablerow] = "Geolabs"
+                except Exception as e:
+                    print(e)
+                    pass
+
+                '''RPLT'''
+                if table == 'RPLT':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['match_id'][tablerow] == self.tables[table]['match_id'][tablerow -1]:
+                            self.tables[table]['Depth'][tablerow] = format(float(self.tables[table]['Depth'][tablerow]) + 0.01,'.2f')
+                        if self.tables[table]['match_id'][tablerow] == self.tables[table]['match_id'][tablerow -2]:
+                            self.tables[table]['Depth'][tablerow] = format(float(self.tables[table]['Depth'][tablerow]) + 0.01,'.2f')
+                        try:
+                            if self.tables[table]['match_id'][tablerow] == self.tables[table]['match_id'][tablerow -3]:
+                                self.tables[table]['Depth'][tablerow] = format(float(self.tables[table]['Depth'][tablerow]) + 0.01,'.2f')
+                        except:
+                            pass
+
+
+                '''PTST'''
+                if table == 'PTST':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "#" in str(self.tables[table]['PTST_PDEN'][tablerow].lower()):
+                            self.tables[table]['PTST_PDEN'][tablerow] = str(self.tables[table]['PTST_PDEN'][tablerow]).rsplit('#', 2)[1]
+                        if "undisturbed" in str(self.tables[table]['PTST_COND'][tablerow].lower()):
+                            self.tables[table]['PTST_COND'][tablerow] = "UNDISTURBED"
+                        if "remoulded" in str(self.tables[table]['PTST_COND'][tablerow].lower()):
+                            self.tables[table]['PTST_COND'][tablerow] = "REMOULDED"
+                        if str(self.tables[table]['PTST_TESN'][tablerow]) == '':
+                            self.tables[table]['PTST_TESN'][tablerow] = "1"                
+
+                # '''Drop columns'''
+                # if "match_id" in self.tables[table]:
+                #     self.tables[table].drop(['match_id'], axis=1, inplace=True)
 
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
@@ -1366,6 +1508,7 @@ Check the AGS with "View data".''')
         self.soils.configure(state=tk.DISABLED)
         self.psl.configure(state=tk.DISABLED)
         self.geolabs.configure(state=tk.DISABLED)
+        self.fugro.configure(state=tk.DISABLED)
         
     def _enable_buttons(self):
         self.button_open.configure(state=tk.NORMAL)
@@ -1381,6 +1524,7 @@ Check the AGS with "View data".''')
         self.soils.configure(state=tk.NORMAL)
         self.psl.configure(state=tk.NORMAL)
         self.geolabs.configure(state=tk.NORMAL)
+        self.fugro.configure(state=tk.NORMAL)
 
 window = ct.CTk()
 app = Application()
