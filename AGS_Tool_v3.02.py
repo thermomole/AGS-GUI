@@ -556,8 +556,8 @@ Please select an AGS with "Open File..."''')
         elif self.get_selected_lab() == "DETS":
             print('DETS AGS selected to match to gINT.')
             self.match_unique_id_dets()
-        elif self.get_selected_lab() == "Strucural Soils":
-            print('Strucural Soils AGS selected to match to gINT.')
+        elif self.get_selected_lab() == "Structural Soils":
+            print('Structural Soils Soils AGS selected to match to gINT.')
             self.match_unique_id_soils()
         elif self.get_selected_lab() == "PSL":
             print('PSL AGS selected to match to gINT.')
