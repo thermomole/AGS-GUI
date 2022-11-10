@@ -22,7 +22,7 @@
 - [Lab Only Data Export](#lab-only-data-export)
 <br>
 
-<img src="images/AGS-Tool.png" data-canonical-src="images/AGS-Tool.png" width=50%/>
+<img src="images/AGS-Tool.png" data-canonical-src="images/AGS-Tool.png"/>
 
 #### Open an AGS file
   - Open any valid AGS files.
