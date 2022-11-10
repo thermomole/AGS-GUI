@@ -11,6 +11,7 @@ warnings.filterwarnings("ignore")
 
 # add check when defining testing lab for each table to check if string is in lab
 # if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
+# split match functions to smaller functions where possible
 
 class Application(ct.CTkFrame):
 
@@ -21,8 +22,8 @@ class Application(ct.CTkFrame):
         super(Application, self).__init__()
 
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        window.geometry('450x610')
-        window.title("AGS Tool v3.01")
+        window.geometry('450x440')
+        window.title("AGS Tool v3.02")
 
         self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
@@ -56,35 +57,17 @@ class Application(ct.CTkFrame):
         self.del_tbl.pack(pady=8, side=tk.TOP)
         self.del_tbl.configure(state=tk.DISABLED)
 
-        self.unique_id = ct.CTkButton(self.botframe, text='''Fix AGS from GM Lab''', command=self.match_unique_id_gqm, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.unique_id.pack(pady=8, side=tk.TOP)
-        self.unique_id.configure(state=tk.DISABLED)
+        self.selected_lab = ct.StringVar(value="Select a Lab")
 
-        self.dets = ct.CTkButton(self.botframe, text='''Fix AGS from DETS''', command=self.match_unique_id_dets, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.dets.pack(pady=8, side=tk.TOP)
-        self.dets.configure(state=tk.DISABLED)
+        self.lab_select = ct.CTkOptionMenu(master=self.botframe, variable=self.selected_lab, values=["GM Lab","DETS","Structural Soils","PSL","Geolabs","Geolabs (50HZ Fugro)"],
+        corner_radius=10, fg_color="#2b4768", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        self.lab_select.pack(pady=8, side=tk.TOP)
+        self.lab_select.configure(state=tk.DISABLED)
 
-        self.soils = ct.CTkButton(self.botframe, text='''Fix AGS from Strucural Soils''', command=self.match_unique_id_soils, 
+        self.match_lab = ct.CTkButton(self.botframe, text='''Match Lab AGS to gINT''', command=self.select_lab_match, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.soils.pack(pady=8, side=tk.TOP)
-        self.soils.configure(state=tk.DISABLED)
-
-        self.psl = ct.CTkButton(self.botframe, text='''Fix AGS from PSL''', command=self.match_unique_id_psl, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.psl.pack(pady=8, side=tk.TOP)
-        self.psl.configure(state=tk.DISABLED)
-
-        self.geolabs = ct.CTkButton(self.botframe, text='''Fix AGS from Geolabs''', command=self.match_unique_id_geolabs, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.geolabs.pack(pady=8, side=tk.TOP)
-        self.geolabs.configure(state=tk.DISABLED)
-
-        self.fugro = ct.CTkButton(self.botframe, text='''Fix AGS from Geolabs (FUGRO)''', command=self.match_unique_id_geolabs_fugro, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.fugro.pack(pady=8, side=tk.TOP)
-        self.fugro.configure(state=tk.DISABLED)
+        self.match_lab.pack(pady=8, side=tk.TOP)
+        self.match_lab.configure(state=tk.DISABLED)
 
         self.cpt_only = ct.CTkButton(self.botframe, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
@@ -166,7 +149,7 @@ class Application(ct.CTkFrame):
     def get_ags_file(self):
         self._disable_buttons()
 
-        window.geometry('450x610')
+        window.geometry('450x440')
         self.text.set('''Please insert AGS file.
 ''')
         if self.box == True:
@@ -346,7 +329,7 @@ Please select an AGS with "Open File..."''')
                 self.result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
             self.result_list.index.name = ' '
-            window.geometry('775x760')
+            window.geometry('775x620')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
@@ -360,7 +343,7 @@ Please select an AGS with "Open File..."''')
             self.text.set('''Results list ready to export.
 ''')
         else:
-            window.geometry('775x760')
+            window.geometry('775x620')
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.listbox.delete(1.0,100.0)
@@ -394,7 +377,7 @@ Please select an AGS with "Open File..."''')
     def start_pandasgui(self):
         self._disable_buttons()
 
-        window.geometry('450x610')
+        window.geometry('450x440')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         window.update()
@@ -424,7 +407,7 @@ Close GUI to resume.''')
 
     def check_ags(self):
         self._disable_buttons()
-        window.geometry('450x610')
+        window.geometry('450x440')
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -480,7 +463,7 @@ Please select an AGS with "Open File..."''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            window.geometry('550x610')
+            window.geometry('550x460')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
             self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
@@ -555,6 +538,33 @@ Please select an AGS with "Open File..."''')
 
         return self.ags_tables
 
+    def get_selected_lab(self):
+        lab = self.lab_select.get()
+        return lab
+
+    def select_lab_match(self):
+        if self.get_selected_lab() == "Select a Lab" or self.get_selected_lab() == "":
+            print("Please selected a Lab to match AGS results to gINT.")
+
+        elif self.get_selected_lab() == "GM Lab":
+            print('GM Lab AGS selected to match to gINT.')
+            self.match_unique_id_gqm()
+        elif self.get_selected_lab() == "DETS":
+            print('DETS AGS selected to match to gINT.')
+            self.match_unique_id_dets()
+        elif self.get_selected_lab() == "Strucural Soils":
+            print('Strucural Soils AGS selected to match to gINT.')
+            self.match_unique_id_soils()
+        elif self.get_selected_lab() == "PSL":
+            print('PSL AGS selected to match to gINT.')
+            self.match_unique_id_psl()
+        elif self.get_selected_lab() == "Geolabs":
+            print('Geolabs AGS selected to match to gINT.')
+            self.match_unique_id_geolabs()
+        elif self.get_selected_lab() == "Geolabs (50HZ Fugro)":
+            print('Geolabs (50HZ Fugro) AGS selected to match to gINT.')
+            self.match_unique_id_geolabs_fugro()
+        
 
     def match_unique_id_gqm(self):
         self._disable_buttons()
@@ -1503,15 +1513,11 @@ Check the AGS with "View data".''')
         self.button_count_results.configure(state=tk.DISABLED)
         self.button_ags_checker.configure(state=tk.DISABLED)
         self.button_save_ags.configure(state=tk.DISABLED)
-        self.unique_id.configure(state=tk.DISABLED)
         self.del_tbl.configure(state=tk.DISABLED)
-        self.dets.configure(state=tk.DISABLED)
         self.cpt_only.configure(state=tk.DISABLED)
         self.lab_only.configure(state=tk.DISABLED)
-        self.soils.configure(state=tk.DISABLED)
-        self.psl.configure(state=tk.DISABLED)
-        self.geolabs.configure(state=tk.DISABLED)
-        self.fugro.configure(state=tk.DISABLED)
+        self.lab_select.configure(state=tk.DISABLED)
+        self.match_lab.configure(state=tk.DISABLED)
         
     def _enable_buttons(self):
         self.button_open.configure(state=tk.NORMAL)
@@ -1519,15 +1525,11 @@ Check the AGS with "View data".''')
         self.button_count_results.configure(state=tk.NORMAL)
         self.button_ags_checker.configure(state=tk.NORMAL)
         self.button_save_ags.configure(state=tk.NORMAL)
-        self.unique_id.configure(state=tk.NORMAL)
         self.del_tbl.configure(state=tk.NORMAL)
-        self.dets.configure(state=tk.NORMAL)
         self.cpt_only.configure(state=tk.NORMAL)
         self.lab_only.configure(state=tk.NORMAL)
-        self.soils.configure(state=tk.NORMAL)
-        self.psl.configure(state=tk.NORMAL)
-        self.geolabs.configure(state=tk.NORMAL)
-        self.fugro.configure(state=tk.NORMAL)
+        self.lab_select.configure(state=tk.NORMAL)
+        self.match_lab.configure(state=tk.NORMAL)
 
 window = ct.CTk()
 app = Application()
