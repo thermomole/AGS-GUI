@@ -98,6 +98,7 @@ class Application(ct.CTkFrame):
         self.error_list = []
         self.ags_tables = []
         self.export = False
+        self.results_with_samp_and_type = ""
 
         self.core_tables = ["TRAN","PROJ","UNIT","ABBR","TYPE","DICT","LOCA"]
 
@@ -191,7 +192,7 @@ Please select an AGS with "Open File..."''')
             self.button_export_error.pack_forget()
             self.export = False
 
-        results_with_samp_and_type = pd.DataFrame()
+        self.results_with_samp_and_type = pd.DataFrame()
 
         lab_tables = [
             'TRIG',
@@ -311,7 +312,7 @@ Please select an AGS with "Open File..."''')
                     all_results.append(type_list)
                     print(str(table) + " - " + str(type_list))
 
-                    results_with_samp_and_type = pd.concat([results_with_samp_and_type, table_results])
+                    self.results_with_samp_and_type = pd.concat([self.results_with_samp_and_type, table_results])
 
                 except Exception as e:
                     error_tables.append(str(e))
@@ -320,7 +321,7 @@ Please select an AGS with "Open File..."''')
             print(f"Table(s) not found:  {str(error_tables)}")
 
         self.result_list = pd.DataFrame.from_dict(all_results, orient='columns')
-        #results_with_samp_and_type.to_csv("all_results.csv", index=False)	
+        #self.results_with_samp_and_type.to_csv("all_results.csv", index=False)	
 
         if self.box == False:
             if self.result_list.empty:
@@ -370,6 +371,9 @@ Please select an AGS with "Open File..."''')
             return
         self.result_list.to_csv(self.path_directory, index=False, index_label=False, header=None)
         print(f"File saved in:  + {str(self.path_directory)}")
+        self.results_with_samp_and_type.to_csv(self.path_directory + "all_results.csv", index=False, index_label=False, header=None)	
+        print(f"File saved in:  + {str(self.path_directory)}")
+
 
         self._enable_buttons()
 
