@@ -18,9 +18,8 @@
 - [Save AGS file](#save-ags-file)
 - [Count Lab Results](#count-lab-results)
 - [Check AGS for Errors](#check-ags-for-errors)
-- [Fix AGS from GM Lab](#fix-ags-from-gm-lab)
-- [Fix AGS from DETS](#fix-ags-from-dets)
 - [Delete Non-Result Tables for gINT Import](#delete-non-result-tables-for-gint-import)
+- [Match Lab AGS to gINT](#match-lab-ags-to-gint)
 - [CPT Only Data Export](#cpt-only-data-export)
 - [Lab Only Data Export](#lab-only-data-export)
 
@@ -54,22 +53,16 @@
     - Minor errors may arise with fields in DICT with incorrect DICT_STAT, (e.g. if a SPEC_DPTH field is not used as a KEY or REQUIRED field in DICT.DICT_STAT).
     - Error logs can be exported to a .txt file.
 
-#### Fix AGS from GM Lab
-  - Matches sample data from a gINT database to AGS received from GM Lab.
-    - Specific conditions are hard-coded to account for inconsistencies between issues of AGS from this lab, such as GRAG_FINE.
-    - As the lab does not provide chemical testing, there is a check in place to look for ERES or GCHM groups, to flag whether this AGS is from GM Lab - otherwise several matching features will be redundant.
-    - As well as amending values and placement of values, it will also rename and reformat fields to be imported into gINT.
-
-#### Fix AGS from DETS
-  - Matches sample data from a gINT database to AGS received by DETS.
-    - As these issues of AGS are restricted to chemical results, there is a check to search for ERES and GCHM groups.
-    - As there are several fields that seem to report the same information (such as ratio of solid mass to water content in testing method), it will rename and reformat accordingly based on strings or values found in named fields.
-    - As borehole names were erroneous and inconsistent between issues of AGS, strings in LOCA_ID will be split on the first use of whitespace, to remove unnecessary data.
-
 #### Delete Non-Result Tables for gINT Import
   - This checks the groups found in the loaded AGS file against a set list of groups expected to contain laboratory test results.
     - This is mainly used remove unwanted groups that may conflict when the file is imported to gINT (e.g. removing SAMP table to not create incorrect duplicate samples), and but also filters data (removing CPT data to improve load times for PandasGUI), and to improve match time for sample data from gINT (by removing non-used tables from the loop).
     - TRAN and PROJ are the two tables gINT need to class the AGS as readable data (with TRAN needed for the AGS version, and PROJ used as the parent of all other tables) - they are included with lab results and omitted with the correspondence file, to import only relevant data from onshore labs. 
+
+#### Match Lab AGS to gINT
+   - Matches sample data from an AGS file to a gINT database.
+     - Selecting a lab from the dropdown option menu toggles between functions, as different labs require differening conditions for multiple test types to be matched correctly. 
+     - Specific conditions are hard-coded to account for inconsistencies between issues of AGS from specific labs.
+     - As well as amending values and placement of values, it will also rename and reformat fields to be imported into gINT.
     
 #### CPT Only Data Export
   - Checks the groups found in the loaded AGS file against a set list of groups expected to contain CPT data, including sesimic.
