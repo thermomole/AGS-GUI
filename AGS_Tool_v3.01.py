@@ -232,6 +232,9 @@ Please select an AGS with "Open File..."''')
             'GCHM',
             'RESG',
             'ERES',
+            'RCAG',
+            'RDEN',
+            'RUCS',
             ]
 
         all_results = []
@@ -315,7 +318,7 @@ Please select an AGS with "Open File..."''')
                             val.append(z)
                         count = list(zip(head,val))
                     else:
-                        count = str(len(samp_id) - 2)
+                        count = str(len(samp_id))
                         sample = list(zip(location,samp_id,samp_ref,samp_depth))
                         table_results_2 = pd.DataFrame.from_dict(sample)
                         table_results = pd.concat([table_results, table_results_2])
@@ -334,7 +337,7 @@ Please select an AGS with "Open File..."''')
             print(f"Table(s) not found:  {str(error_tables)}")
 
         self.result_list = pd.DataFrame.from_dict(all_results, orient='columns')
-        results_with_samp_and_type.to_csv("all_results.csv", index=False)	
+        #results_with_samp_and_type.to_csv("all_results.csv", index=False)	
 
         if self.box == False:
             if self.result_list.empty:
