@@ -11,7 +11,9 @@
      - Open gINT, go to File > Import AGS
      - Select the AGS file saved via the tool, and select the .gci import correspondence file
   
-<br>
+<p align="center">
+<img src="images/AGS-Tool.png" data-canonical-src="images/AGS-Tool.png" width="500"/>
+</p>
 
 - [Open an AGS file](#open-an-ags-file)
 - [View Data](#view-data)
