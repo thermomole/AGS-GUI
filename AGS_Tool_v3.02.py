@@ -1067,12 +1067,6 @@ Did you select the correct gint?''')
 
         self.get_ags_tables()
 
-        # if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
-        #     pass
-        # else:
-        #     self.error = True
-        #     print("Cannot find GCHM or ERES - looks like this AGS is from GM Lab.")
-
         for table in self.ags_tables:
             try:
                 try:
