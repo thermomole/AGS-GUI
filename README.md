@@ -4,16 +4,12 @@
 #### Steps for gINT Import:
      - Open a valid AGS from GM Lab or DETS
      - Delete Non-Result Tables
-     - Select 'Fix AGS' for the relevent lab (check the lab is correct)
+     - Select a laboratory from the dropdown list, then select Match Lab AGS to gINT
      - Select a gINT project when prompted by dialogue box (check the gINT is correct)
      - Once "Matching Complete!" is displayed, select 'Save AGS file'
      - Save the file when prompted by the dialogue box
      - Open gINT, go to File > Import AGS
      - Select the AGS file saved via the tool, and select the .gci import correspondence file
-  
-<p align="center">
-<img src="images/AGS-Tool.png" data-canonical-src="images/AGS-Tool.png" width="500"/>
-</p>
 
 - [Open an AGS file](#open-an-ags-file)
 - [View Data](#view-data)
@@ -24,8 +20,9 @@
 - [Match Lab AGS to gINT](#match-lab-ags-to-gint)
 - [CPT Only Data Export](#cpt-only-data-export)
 - [Lab Only Data Export](#lab-only-data-export)
-
 <br>
+
+<img src="images/AGS-Tool.png" data-canonical-src="images/AGS-Tool.png" height="500"/>
 
 #### Open an AGS file
   - Open any valid AGS files.
