@@ -525,7 +525,8 @@ Please select an AGS with "Open File..."''')
             conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ='+self.gint_location+';')
             query = "SELECT * FROM SPEC"
             self.gint_spec = pd.read_sql(query, conn)
-        except:
+        except Exception as e:
+            print(e)
             print("Uhh.... either that's the wrong gINT, or something went wrong.")
             return
 
