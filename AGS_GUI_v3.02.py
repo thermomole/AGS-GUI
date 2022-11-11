@@ -23,7 +23,7 @@ class Application(ct.CTkFrame):
 
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
         window.geometry('450x440')
-        window.title("AGS Tool v3.02")
+        window.title("AGS GUI v3.02")
 
         self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
