@@ -2,7 +2,7 @@
 <br>
 
 #### Steps for gINT Import:
-     - Open a valid AGS from GM Lab or DETS
+     - Open a valid AGS file
      - Delete Non-Result Tables
      - Select a laboratory from the dropdown list, then select Match Lab AGS to gINT
      - Select a gINT project when prompted by dialogue box (check the gINT is correct)
