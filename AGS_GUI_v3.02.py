@@ -66,6 +66,7 @@ class Application(ct.CTkFrame):
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
         window.lift()
         window.geometry('450x440+150+150')
+        window.resizable(False,False)
         window.title("AGS GUI v3.02")
 
         self.botframe = ct.CTkFrame(window)
