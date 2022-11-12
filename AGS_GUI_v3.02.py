@@ -3,6 +3,8 @@ from tkinter import filedialog, scrolledtext, messagebox
 from python_ags4 import AGS4
 from pandasgui import show
 from statistics import mean
+from PIL import ImageTk, Image 
+from threading import Timer
 import pandas as pd
 import customtkinter as ct
 import pyodbc
@@ -13,6 +15,31 @@ warnings.filterwarnings("ignore")
 # if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
 # split match functions to smaller functions where possible
 
+splash = ct.CTk()
+splash.geometry("510x255+1000+500")
+splash.wm_overrideredirect(True)
+splash.lift()
+splash.wm_attributes("-transparentcolor", "black")
+splash_logo = Image.open('images/GQ_AGS.PNG')
+splash_img = ImageTk.PhotoImage(splash_logo)
+splash_label = tk.Label(image=splash_img,bg='black')
+splash_label.image = splash_img
+splash_label.place(x=0,y=0)
+
+def splash_init():
+    global after_id
+    after_id = splash.after(3000,lambda:del_splash())
+    splash.mainloop()
+
+def del_splash():
+    global after_id
+    splash.after_cancel(after_id)
+    after_id = None
+    splash.destroy()
+
+splash_init()
+
+
 class Application(ct.CTkFrame):
 
     ct.set_appearance_mode("system")
@@ -22,7 +49,8 @@ class Application(ct.CTkFrame):
         super(Application, self).__init__()
 
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
-        window.geometry('450x440')
+        window.lift()
+        window.geometry('450x440+150+150')
         window.title("AGS GUI v3.02")
 
         self.botframe = ct.CTkFrame(window)
@@ -284,12 +312,10 @@ Please select an AGS with "Open File..."''')
                         result_table.columns = ['POINT','ID','REF','DEPTH','TYPE']
                         tt = result_table['TYPE'].to_list()
                         test_type_df = pd.DataFrame.from_dict(tt)
-                    
+
                     samples = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
                     samples.insert(0,table)
                     table_results = pd.DataFrame.from_dict(samples)
-
-
 
                     if not test_type == "":
                         num_test = test_type_df.value_counts()
