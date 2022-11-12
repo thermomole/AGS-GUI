@@ -16,7 +16,22 @@ warnings.filterwarnings("ignore")
 # split match functions to smaller functions where possible
 
 splash = ct.CTk()
-splash.geometry("510x255+1000+500")
+
+screen_width = splash.winfo_screenwidth()
+screen_height = splash.winfo_screenheight()
+
+if screen_height == 1440:
+    wid = int(screen_width / 2.5)
+    hei = int(screen_height / 2.5)
+elif screen_height == 2160:
+    wid = int(screen_width / 2)
+    hei = int(screen_height / 2)
+else:
+    wid = int(screen_width / 3)
+    hei = int(screen_height / 3)
+
+splash.geometry(f"510x255+{wid}+{hei}")
+
 splash.wm_overrideredirect(True)
 splash.lift()
 splash.wm_attributes("-transparentcolor", "black")
@@ -28,9 +43,9 @@ splash_label.place(x=0,y=0)
 
 def splash_init():
     global after_id
-    after_id = splash.after(3000,lambda:del_splash())
+    after_id = splash.after(4000,lambda:del_splash())
     splash.mainloop()
-
+    
 def del_splash():
     global after_id
     splash.after_cancel(after_id)
