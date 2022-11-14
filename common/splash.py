@@ -33,7 +33,6 @@ splash_label.place(x=0,y=0)
 def splash_init():
     global after_id
     after_id = splash.after(4000,lambda:del_splash())
-    splash.protocol('WM_DELETE_WINDOW', quit)
     splash.mainloop()
     
 def del_splash():
