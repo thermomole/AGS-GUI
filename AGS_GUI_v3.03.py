@@ -3,8 +3,6 @@ from tkinter import filedialog, scrolledtext, messagebox
 from python_ags4 import AGS4
 from pandasgui import show
 from statistics import mean
-from PIL import ImageTk, Image 
-from threading import Timer
 import pandas as pd
 import customtkinter as ct
 import pyodbc
