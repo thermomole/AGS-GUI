@@ -2,6 +2,8 @@ import tkinter as tk
 from PIL import ImageTk, Image 
 import customtkinter as ct
 
+# after_cancel tasks: https://stackoverflow.com/questions/63628566/how-to-handle-invalid-command-name-error-while-executing-after-script-in-tk
+
 splash = ct.CTk()
 
 screen_width = splash.winfo_screenwidth()
@@ -31,12 +33,13 @@ splash_label.place(x=0,y=0)
 def splash_init():
     global after_id
     after_id = splash.after(4000,lambda:del_splash())
+    splash.protocol('WM_DELETE_WINDOW', quit)
     splash.mainloop()
     
 def del_splash():
-    global after_id
-    splash.after_cancel(after_id)
-    after_id = None
+    for after_id in splash.tk.eval('after info').split():
+        splash.after_cancel(after_id)
+
     splash.destroy()
 
 splash_init()
