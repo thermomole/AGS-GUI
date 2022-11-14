@@ -32,6 +32,7 @@ splash_label.place(x=0,y=0)
 
 def splash_init():
     splash.after(4000,lambda:del_splash())
+    splash.attributes("-topmost", True)
     splash.mainloop()
     
 def del_splash():
