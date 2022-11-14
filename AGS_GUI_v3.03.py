@@ -12,6 +12,9 @@ import warnings
 import common.splash as splash
 warnings.filterwarnings("ignore")
 
+# if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
+# split match functions to smaller functions where possible
+
 class Application(ct.CTkFrame):
 
     ct.set_appearance_mode("system")
@@ -24,7 +27,7 @@ class Application(ct.CTkFrame):
         window.lift()
         window.geometry('450x440+150+150')
         window.resizable(False,False)
-        window.title("AGS GUI v3.02")
+        window.title("AGS GUI v3.03")
 
         self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
@@ -124,6 +127,7 @@ class Application(ct.CTkFrame):
             'LTCH',
             'LTHC',
             'LVAN',
+            'LHVN',
             'RELD',
             'SHBG',
             'SHBT',
@@ -144,7 +148,6 @@ class Application(ct.CTkFrame):
             'RCAG',
             'RDEN',
             'RUCS',
-            'LHVN',
             ]
 
 
@@ -220,6 +223,8 @@ Please select an AGS with "Open File..."''')
             'RCAG',
             'RDEN',
             'RUCS',
+            'RPLT',
+            'LHVN'
             ]
 
         all_results = []
@@ -286,11 +291,16 @@ Please select an AGS with "Open File..."''')
                         tt = result_table['TYPE'].to_list()
                         test_type_df = pd.DataFrame.from_dict(tt)
 
-                    samples = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
-                    samples.insert(0,table)
-                    table_results = pd.DataFrame.from_dict(samples)
 
+                    samples = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
+                    table_results = pd.DataFrame.from_dict(samples)
+                    if table == 'GRAT':
+                        table_results.drop_duplicates(inplace=True)
+         
                     if not test_type == "":
+                        table_results.loc[-1] = [table,'','','','']
+                        table_results.index = table_results.index + 1
+                        table_results.sort_index(inplace=True)
                         num_test = test_type_df.value_counts()
                         test_counts = pd.DataFrame(num_test)
                         head = []
@@ -304,6 +314,12 @@ Please select an AGS with "Open File..."''')
                         count = str(len(samp_id))
                         sample = list(zip(location,samp_id,samp_ref,samp_depth))
                         table_results_2 = pd.DataFrame.from_dict(sample)
+                        if table == 'RPLT':
+                            table_results_2.drop_duplicates(inplace=True)
+                            count = table_results_2.shape[0]
+                        table_results_2.loc[-1] = [table,'','','']
+                        table_results_2.index = table_results_2.index + 1
+                        table_results_2.sort_index(inplace=True)
                         table_results = pd.concat([table_results, table_results_2])
                     type_list = []
                     type_list.append(str(table))
@@ -320,7 +336,6 @@ Please select an AGS with "Open File..."''')
             print(f"Table(s) not found:  {str(error_tables)}")
 
         self.result_list = pd.DataFrame.from_dict(all_results, orient='columns')
-        #self.results_with_samp_and_type.to_csv("all_results.csv", index=False)	
 
         if self.box == False:
             if self.result_list.empty:
@@ -368,10 +383,12 @@ Please select an AGS with "Open File..."''')
         if not self.path_directory:
             self._enable_buttons()
             return
-        self.result_list.to_csv(self.path_directory, index=False, index_label=False, header=None)
-        print(f"File saved in:  + {str(self.path_directory)}")
-        self.results_with_samp_and_type.to_csv(self.path_directory + "all_results.csv", index=False, index_label=False, header=None)	
-        print(f"File saved in:  + {str(self.path_directory)}")
+        all_result_count = self.path_directory[:-4] + "_result_count.csv"
+        self.result_list.to_csv(all_result_count, index=False, index_label=False, header=None)
+        print(f"File saved in:  + {str(all_result_count)}")
+        all_result_filename = self.path_directory[:-4] + "_all_results.csv"
+        self.results_with_samp_and_type.to_csv(all_result_filename, index=False, index_label=False, header=None)	
+        print(f"File saved in:  + {str(all_result_filename)}")
 
 
         self._enable_buttons()
@@ -488,6 +505,8 @@ Please select an AGS with "Open File..."''')
         with open(self.log_path, "w") as f:
             for item in self.error_list:
                 f.write("%s\n" % item)
+
+        print(f"Error log exported to:  + {str(self.log_path)}")
 
         self._enable_buttons()
 
@@ -1348,6 +1367,7 @@ Did you select the correct gint?''')
                                 # for x in self.tables[table].keys():
                                 #     if "LAB" in x:
                                 #         self.tables[table][x][tablerow] = "Geolabs"
+
                 except Exception as e:
                     print(e)
                     pass
@@ -1378,9 +1398,9 @@ Did you select the correct gint?''')
                         if str(self.tables[table]['PTST_TESN'][tablerow]) == '':
                             self.tables[table]['PTST_TESN'][tablerow] = "1"                
 
-                # '''Drop columns'''
-                # if "match_id" in self.tables[table]:
-                #     self.tables[table].drop(['match_id'], axis=1, inplace=True)
+                '''Drop columns'''
+                if "match_id" in self.tables[table]:
+                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
 
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
