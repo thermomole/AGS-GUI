@@ -54,10 +54,10 @@ class Application(ct.CTkFrame):
         self.button_ags_checker.pack(pady=8, padx=10, side=tk.RIGHT)
         self.button_ags_checker.configure(state=tk.DISABLED)
 
-        self.del_tbl = ct.CTkButton(self.botframe, text='''Delete Non-Result Tables for gINT Import''', command=self.del_non_lab_tables, 
+        self.button_del_tbl = ct.CTkButton(self.botframe, text='''Delete Non-Result Tables for gINT Import''', command=self.del_non_lab_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
-        self.del_tbl.pack(pady=8, side=tk.TOP)
-        self.del_tbl.configure(state=tk.DISABLED)
+        self.button_del_tbl.pack(pady=8, side=tk.TOP)
+        self.button_del_tbl.configure(state=tk.DISABLED)
 
         self.selected_lab = ct.StringVar(value="Select a Lab")
 
@@ -66,20 +66,20 @@ class Application(ct.CTkFrame):
         self.lab_select.pack(pady=8, side=tk.TOP)
         self.lab_select.configure(state=tk.DISABLED)
 
-        self.match_lab = ct.CTkButton(self.botframe, text='''Match Lab AGS to gINT''', command=self.select_lab_match, 
+        self.button_match_lab = ct.CTkButton(self.botframe, text='''Match Lab AGS to gINT''', command=self.select_lab_match, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
-        self.match_lab.pack(pady=8, side=tk.TOP)
-        self.match_lab.configure(state=tk.DISABLED)
+        self.button_match_lab.pack(pady=8, side=tk.TOP)
+        self.button_match_lab.configure(state=tk.DISABLED)
 
-        self.cpt_only = ct.CTkButton(self.botframe, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
+        self.button_cpt_only = ct.CTkButton(self.botframe, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
-        self.cpt_only.pack(pady=8, padx=10, side=tk.RIGHT)
-        self.cpt_only.configure(state=tk.DISABLED)
+        self.button_cpt_only.pack(pady=8, padx=10, side=tk.RIGHT)
+        self.button_cpt_only.configure(state=tk.DISABLED)
 
-        self.lab_only = ct.CTkButton(self.botframe, text='''Lab Only Data Export''', command=self.export_lab_only, 
+        self.button_lab_only = ct.CTkButton(self.botframe, text='''Lab Only Data Export''', command=self.export_lab_only, 
         corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
-        self.lab_only.pack(pady=8, padx=10, side=tk.LEFT)
-        self.lab_only.configure(state=tk.DISABLED)
+        self.button_lab_only.pack(pady=8, padx=10, side=tk.LEFT)
+        self.button_lab_only.configure(state=tk.DISABLED)
     
         self.text = tk.StringVar()
         self.text.set('''Please insert AGS file.
@@ -104,53 +104,15 @@ class Application(ct.CTkFrame):
 
         self.core_tables = ["TRAN","PROJ","UNIT","ABBR","TYPE","DICT","LOCA"]
 
-        self.result_tables = [
-            'SAMP',
-            'SPEC',
-            'TRIG',
-            'TRIT',
-            'LNMC',
-            'LDEN',
-            'GRAG',
-            'GRAT',
-            'CONG',
-            'CONS',
-            'CODG',
-            'CODT',
-            'LDYN',
-            'LLPL',
-            'LPDN',
-            'LPEN',
-            'LRES',
-            'LTCH',
-            'LTHC',
-            'LVAN',
-            'LHVN',
-            'RELD',
-            'SHBG',
-            'SHBT',
-            'TREG',
-            'TRET',
-            'DSSG',
-            'DSST',
-            'IRSG',
-            'IRST',
-            'GCHM',
-            'ERES',
-            'RESG',
-            'REST',
-            'RESV',
-            'TORV',
-            'PTST',
-            'RPLT',
-            'RCAG',
-            'RDEN',
-            'RUCS',
-            ]
+        self.result_tables = ['SAMP','SPEC','TRIG','TRIT','LNMC','LDEN','GRAG','GRAT',
+        'CONG','CONS','CODG','CODT','LDYN','LLPL','LPDN','LPEN','LRES','LTCH','LTHC',
+        'LVAN','LHVN','RELD','SHBG','SHBT','TREG','TRET','DSSG','DSST','IRSG','IRST',
+        'GCHM','ERES','RESG','REST','RESV','TORV','PTST','RPLT','RCAG','RDEN','RUCS',
+        ]
 
 
     def get_ags_file(self):
-        self._disable_buttons()
+        self.disable_buttons()
 
         window.geometry('450x440')
         self.text.set('''Please insert AGS file.
@@ -184,11 +146,10 @@ Please select an AGS with "Open File..."''')
             self.button_open.configure(state=tk.NORMAL)
         finally:
             print(f"AGS file loaded: {self.file_location}")
-            self._enable_buttons()
-
+            self.enable_buttons()
 
     def count_lab_results(self):
-        self._disable_buttons()
+        self.disable_buttons()
 
         if self.export == True:
             self.button_export_error.pack_forget()
@@ -196,34 +157,10 @@ Please select an AGS with "Open File..."''')
 
         self.results_with_samp_and_type = pd.DataFrame()
 
-        lab_tables = [
-            'TRIG',
-            'LNMC',
-            'LDEN',
-            'GRAT',
-            'CONG',
-            'LDYN',
-            'LLPL',
-            'LPDN',
-            'LPEN',
-            'LRES',
-            'LTCH',
-            'LVAN',
-            'RELD',
-            'SHBG',
-            'TREG',
-            'DSSG',
-            'IRSG',
-            'PTST',
-            'GCHM',
-            'RESG',
-            'ERES',
-            'RCAG',
-            'RDEN',
-            'RUCS',
-            'RPLT',
-            'LHVN'
-            ]
+        lab_tables = ['TRIG','LNMC','LDEN','GRAT','CONG','LDYN','LLPL','LPDN','LPEN',
+        'LRES','LTCH','LVAN','RELD','SHBG','TREG','DSSG','IRSG','PTST','GCHM','RESG',
+        'ERES','RCAG','RDEN','RUCS','RPLT','LHVN'
+        ]
 
         all_results = []
         error_tables = []
@@ -236,7 +173,6 @@ Please select an AGS with "Open File..."''')
                 
         for table in lab_tables:
             if table in self.ags_tables:
-
                 try:
                     location = list(self.tables[table]['LOCA_ID'])
                     location.pop(0)
@@ -288,7 +224,6 @@ Please select an AGS with "Open File..."''')
                         result_table.columns = ['POINT','ID','REF','DEPTH','TYPE']
                         tt = result_table['TYPE'].to_list()
                         test_type_df = pd.DataFrame.from_dict(tt)
-
 
                     samples = list(zip(location,samp_id,samp_ref,samp_depth,test_type))
                     table_results = pd.DataFrame.from_dict(samples)
@@ -372,14 +307,13 @@ Please select an AGS with "Open File..."''')
             self.listbox.pack(padx=20,pady=8, side=tk.BOTTOM)
             pass
 
-        self._enable_buttons()
+        self.enable_buttons()
         
-
     def export_results(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.path_directory = filedialog.asksaveasfilename(filetypes=[('CSV Files', '*.csv')],defaultextension="*.csv",title="Save results list as...")
         if not self.path_directory:
-            self._enable_buttons()
+            self.enable_buttons()
             return
         all_result_count = self.path_directory[:-4] + "_result_count.csv"
         self.result_list.to_csv(all_result_count, index=False, index_label=False, header=None)
@@ -387,13 +321,11 @@ Please select an AGS with "Open File..."''')
         all_result_filename = self.path_directory[:-4] + "_all_results.csv"
         self.results_with_samp_and_type.to_csv(all_result_filename, index=False, index_label=False, header=None)	
         print(f"File saved in:  + {str(all_result_filename)}")
-
-
-        self._enable_buttons()
+        self.enable_buttons()
 
 
     def start_pandasgui(self):
-        self._disable_buttons()
+        self.disable_buttons()
 
         window.geometry('450x440')
         self.text.set('''PandasGUI loading, please wait...
@@ -420,11 +352,10 @@ Close GUI to resume.''')
         for table in self.result_tables:
             if table in list(self.tables):
                 self.ags_tables.append(table)
-        self._enable_buttons()
+        self.enable_buttons()
         
-
     def check_ags(self):
-        self._disable_buttons()
+        self.disable_buttons()
         window.geometry('450x440')
         if self.box == True:
             self.listbox.pack_forget()
@@ -489,15 +420,14 @@ Please select an AGS with "Open File..."''')
             self.text.set('''Error(s) found, check output or click 'Export Error Log'.
 ''')
             window.update()
-
-        self._enable_buttons()
+        self.enable_buttons()
 
     def export_errors(self):
-        self._disable_buttons()
+        self.disable_buttons()
         
         self.log_path = filedialog.asksaveasfilename(filetypes=[('Text Files', '*.txt')],defaultextension="*.txt",title="Save error log as...")
         if self.log_path == '': 
-            self._enable_buttons()
+            self.enable_buttons()
             return
             
         with open(self.log_path, "w") as f:
@@ -505,32 +435,30 @@ Please select an AGS with "Open File..."''')
                 f.write("%s\n" % item)
 
         print(f"Error log exported to:  + {str(self.log_path)}")
-
-        self._enable_buttons()
+        self.enable_buttons()
 
 
     def save_ags(self):
-        self._disable_buttons()
+        self.disable_buttons()
         newFileName = filedialog.asksaveasfilename(filetypes=[('AGS Files', '*.ags')],defaultextension="*.ags",title="Save AGS file as...")
         if not newFileName:
-            self._enable_buttons()
+            self.enable_buttons()
             return
         AGS4.dataframe_to_AGS4(self.tables, self.tables, newFileName)
         print('Done.')
         self.text.set('''AGS saved.
 ''')
         window.update()
-
-        self._enable_buttons()
+        self.enable_buttons()
 
     def get_gint(self):
-        self._disable_buttons()
+        self.disable_buttons()
 
         self.gint_location = filedialog.askopenfilename(filetypes=[('gINT Project', '*.gpj')], title="Please insert gINT database...")
 
         if not self.gint_location:
             messagebox.showwarning(title="Gimme a gINT!", message="You didn't select a gINT file.")
-            self._enable_buttons()
+            self.enable_buttons()
             return
 
         self.text.set('''Getting gINT, please wait...
@@ -550,13 +478,11 @@ Please select an AGS with "Open File..."''')
             return self.gint_spec
 
     def get_ags_tables(self):
-        if self.ags_tables != []:
-            self.ags_tables = []
+        self.ags_table_reset()
 
         for table in self.result_tables:
             if table in list(self.tables):
                 self.ags_tables.append(table)
-
         return self.ags_tables
 
     def get_selected_lab(self):
@@ -566,7 +492,6 @@ Please select an AGS with "Open File..."''')
     def select_lab_match(self):
         if self.get_selected_lab() == "Select a Lab" or self.get_selected_lab() == "":
             print("Please selected a Lab to match AGS results to gINT.")
-
         elif self.get_selected_lab() == "GM Lab":
             print('GM Lab AGS selected to match to gINT.')
             self.match_unique_id_gqm()
@@ -585,12 +510,51 @@ Please select an AGS with "Open File..."''')
         elif self.get_selected_lab() == "Geolabs (50HZ Fugro)":
             print('Geolabs (50HZ Fugro) AGS selected to match to gINT.')
             self.match_unique_id_geolabs_fugro()
-        
+
+    def create_match_id(self):
+        self.get_ags_tables()
+
+        for table in self.ags_tables:
+            try:    
+                if 'match_id' not in self.get_spec():
+                    self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
+            
+                if 'match_id' not in self.tables[table]:
+                    self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
+            except Exception as e:
+                print(e)
+                pass
+
+    def remove_match_id(self):
+        self.get_ags_tables()
+
+        for table in self.ags_tables:
+            if "match_id" in self.tables[table]:
+                self.tables[table].drop(['match_id'], axis=1, inplace=True)
+
+    def check_matched_to_gint(self):
+        if self.matched:
+            self.text.set('''Matching complete! Click: 'Save AGS file'.
+''')
+            window.update()
+            print("Matching complete!")
+            self.enable_buttons()
+            if self.error == True:
+                self.text.set('''gINT matches, Lab doesn't.
+Re-open the AGS and select correct lab.''')
+                window.update()
+        else:    
+            self.text.set('''Couldn't match sample data.
+Did you select the correct gINT or AGS?''')
+            window.update()
+            print("Unable to match sample data from gINT.") 
+            self.enable_buttons()
+
 
     def match_unique_id_gqm(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.get_gint()
-        matched = False
+        self.matched = False
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
@@ -598,7 +562,6 @@ Please select an AGS with "Open File..."''')
 ''')
             window.update()
             return
-
 
         self.text.set('''Matching AGS to gINT, please wait...
 ''')
@@ -611,20 +574,10 @@ Please select an AGS with "Open File..."''')
             self.error = True
             print("GCHM or ERES table(s) found.")
 
+        self.create_match_id()
+
         for table in self.ags_tables:
             try:
-                try:
-                    if 'match_id' not in self.get_spec():
-                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
-                except:
-                    pass
-                
-                try:
-                    if 'match_id' not in self.tables[table]:
-                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
-                except:
-                    pass
-
                 gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
@@ -644,7 +597,7 @@ Please select an AGS with "Open File..."''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                matched = True
+                                self.matched = True
 
                                 if table == 'CONG':
                                     if self.tables[table]['SPEC_REF'][tablerow] == "OED" or self.tables[table]['SPEC_REF'][tablerow] == "OEDR" and self.tables[table]['CONG_TYPE'][tablerow] == '':
@@ -784,8 +737,6 @@ Please select an AGS with "Open File..."''')
 
                 '''LDYN'''
                 if table == 'LDYN':
-                    # if 'Depth' not in self.tables[table]:
-                    #     self.tables[table].insert(8,'Depth','')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
@@ -811,34 +762,15 @@ Please select an AGS with "Open File..."''')
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
-            '''Drop columns'''
-            if "match_id" in self.tables[table]:
-                self.tables[table].drop(['match_id'], axis=1, inplace=True)
-
-        if matched:
-            self.text.set('''Matching complete! Click: 'Save AGS file'.
-''')
-            window.update()
-            print("Matching complete!")
-            self._enable_buttons()
-            if self.error == True:
-                self.text.set('''gINT matches, Lab doesn't.
-Re-open the AGS and select correct lab.''')
-                window.update()
-                print("GCHM or ERES table(s) found - are you sure this AGS is from GM Lab? Try matching again.")
-        else:    
-            self.text.set('''Couldn't match sample data.
-Did you select the correct gINT or AGS?''')
-            window.update()
-            print("Unable to match sample data from gINT.") 
-            self._enable_buttons()
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
             
 
-
     def match_unique_id_dets(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.get_gint()
-        matched = False
+        self.matched = False
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
@@ -860,20 +792,10 @@ Did you select the correct gINT or AGS?''')
             self.error = True
             print("Cannot find GCHM or ERES - looks like this AGS is from GM Lab.")
 
+        self.create_match_id()
+
         for table in self.ags_tables:
             try:
-                try:
-                    if 'match_id' not in self.get_spec():
-                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
-                except:
-                    pass
-                
-                try:
-                    if 'match_id' not in self.tables[table]:
-                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
-                except:
-                    pass
-
                 gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
@@ -886,7 +808,7 @@ Did you select the correct gINT or AGS?''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                matched = True
+                                self.matched = True
                                 if table == 'ERES':
                                     if not 'ERES_REM' in self.tables[table]:
                                         self.tables[table].insert(len(self.tables[table].keys()),'ERES_REM','')
@@ -938,38 +860,19 @@ Did you select the correct gINT or AGS?''')
                         if "ph" in str(self.tables[table]['ERES_RUNI'][tablerow].lower()):
                             self.tables[table]['ERES_RUNI'][tablerow] = "-"
 
-
-                '''Drop columns'''
-                if "match_id" in self.tables[table]:
-                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
-
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
-        if matched:
-            self.text.set('''Matching complete! Click: 'Save AGS file'.
-''')
-            window.update()
-            print("Matching complete!")
-            self._enable_buttons()
-            if self.error == True:
-                self.text.set('''gINT matches, Lab doesn't.
-Re-open the AGS and select correct lab.''')
-                window.update()
-                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
-        else:
-            self.text.set('''Couldn't match sample data.
-Did you select the correct gint?''')
-            window.update()
-            print("Unable to match sample data from gINT.")    
-            self._enable_buttons()
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
 
     
     def match_unique_id_soils(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.get_gint()
-        matched = False
+        self.matched = False
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
@@ -985,21 +888,11 @@ Did you select the correct gint?''')
 
         self.get_ags_tables()
 
+        self.create_match_id()
+
 
         for table in self.ags_tables:
             try:
-                try:
-                    if 'match_id' not in self.get_spec():
-                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
-                except:
-                    pass
-                
-                try:
-                    if 'match_id' not in self.tables[table]:
-                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
-                except:
-                    pass
-
                 gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
@@ -1012,7 +905,7 @@ Did you select the correct gint?''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                matched = True
+                                self.matched = True
                                 self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
                                 self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
                                 self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
@@ -1037,38 +930,19 @@ Did you select the correct gint?''')
                         if "#" in str(self.tables[table]['CONG_PDEN'][tablerow].lower()):
                             self.tables[table]['CONG_PDEN'][tablerow] = str(self.tables[table]['CONG_PDEN'][tablerow]).rsplit('#', 2)[1]
 
-
-                    '''Drop columns'''
-                if "match_id" in self.tables[table]:
-                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
-
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
-        if matched:
-            self.text.set('''Matching complete! Click: 'Save AGS file'.
-''')
-            window.update()
-            print("Matching complete!")
-            self._enable_buttons()
-            if self.error == True:
-                self.text.set('''gINT matches, Lab doesn't.
-Re-open the AGS and select correct lab.''')
-                window.update()
-                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
-        else:
-            self.text.set('''Couldn't match sample data.
-Did you select the correct gint?''')
-            window.update()
-            print("Unable to match sample data from gINT.")    
-            self._enable_buttons()
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
 
     
     def match_unique_id_psl(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.get_gint()
-        matched = False
+        self.matched = False
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
@@ -1084,20 +958,10 @@ Did you select the correct gint?''')
 
         self.get_ags_tables()
 
+        self.create_match_id()
+
         for table in self.ags_tables:
             try:
-                try:
-                    if 'match_id' not in self.get_spec():
-                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
-                except:
-                    pass
-                
-                try:
-                    if 'match_id' not in self.tables[table]:
-                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
-                except:
-                    pass
-
                 gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
@@ -1110,7 +974,7 @@ Did you select the correct gint?''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                matched = True
+                                self.matched = True
                                 self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
                                 self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
                                 self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
@@ -1160,39 +1024,19 @@ Did you select the correct gint?''')
                         if "remoulded" in str(self.tables[table]['PTST_COND'][tablerow].lower()):
                             self.tables[table]['PTST_COND'][tablerow] = "REMOULDED"
                 
-
-                    '''Drop columns'''
-                if "match_id" in self.tables[table]:
-                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
-
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
-        if matched:
-            self.text.set('''Matching complete! Click: 'Save AGS file'.
-''')
-            window.update()
-            print("Matching complete!")
-            self._enable_buttons()
-            if self.error == True:
-                self.text.set('''gINT matches, Lab doesn't.
-Re-open the AGS and select correct lab.''')
-                window.update()
-                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
-        else:
-            self.text.set('''Couldn't match sample data.
-Did you select the correct gint?''')
-            window.update()
-            print("Unable to match sample data from gINT.")    
-            self._enable_buttons()
-
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
 
 
     def match_unique_id_geolabs(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.get_gint()
-        matched = False
+        self.matched = False
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
@@ -1208,21 +1052,10 @@ Did you select the correct gint?''')
 
         self.get_ags_tables()
 
+        self.create_match_id()
+
         for table in self.ags_tables:
             try:
-                try:
-                    if 'match_id' not in self.get_spec():
-                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
-                except:
-                    pass
-                
-                try:
-                    if 'match_id' not in self.tables[table]:
-                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
-                except:
-                    pass
-
-
                 gint_rows = self.get_spec().shape[0]
 
                 for row in range (0,gint_rows):
@@ -1236,7 +1069,7 @@ Did you select the correct gint?''')
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                matched = True
+                                self.matched = True
                                 self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
                                 self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
                                 self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
@@ -1263,41 +1096,20 @@ Did you select the correct gint?''')
                             self.tables[table]['PTST_COND'][tablerow] = "REMOULDED"
                         if str(self.tables[table]['PTST_TESN'][tablerow]) == '':
                             self.tables[table]['PTST_TESN'][tablerow] = "1"
-                
-
-                    '''Drop columns'''
-                if "match_id" in self.tables[table]:
-                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
 
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
-        if matched:
-            self.text.set('''Matching complete! Click: 'Save AGS file'.
-''')
-            window.update()
-            print("Matching complete!")
-            self._enable_buttons()
-            if self.error == True:
-                self.text.set('''gINT matches, Lab doesn't.
-Re-open the AGS and select correct lab.''')
-                window.update()
-                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
-        else:
-            self.text.set('''Couldn't match sample data.
-Did you select the correct gint?''')
-            window.update()
-            print("Unable to match sample data from gINT.")    
-            self._enable_buttons()
-
-
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
 
 
     def match_unique_id_geolabs_fugro(self):
-        self._disable_buttons()
+        self.disable_buttons()
         self.get_gint()
-        matched = False
+        self.matched = False
         self.error = False
 
         if not self.gint_location or self.gint_location == '':
@@ -1313,32 +1125,14 @@ Did you select the correct gint?''')
 
         self.get_ags_tables()
 
+        self.create_match_id()
+
         for table in self.ags_tables:
-            try:
-                try:
-                    if 'match_id' not in self.get_spec():
-                        self.get_spec().insert(len(list(self.get_spec().columns)),'match_id','')
-                except:
-                    pass
-                
-                try:
-                    if 'match_id' not in self.tables[table]:
-                        self.tables[table].insert(len(self.tables[table].keys()),'match_id','')
-                except:
-                    pass
-                
+            try:                
                 if 'Depth' not in self.tables[table]:
                     self.tables[table].insert(8,'Depth','')
 
-
                 gint_rows = self.get_spec().shape[0]
-
-                '''Using for all GQM boreholes'''
-                # for row in range (0,gint_rows):
-                #     self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(format(self.get_spec()['Depth'][row],'.2f'))
-
-                # for row in range (2,len(self.tables[table])):
-                #     self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TOP'][row])
 
                 '''Using for Fugro Boreholes (50HZ samples have different SAMP format including dupe depths)'''
                 for row in range (0,gint_rows):
@@ -1347,12 +1141,11 @@ Did you select the correct gint?''')
                 for row in range (2,len(self.tables[table])):
                     self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TOP'][row]) + str(self.tables[table]['SAMP_REF'][row])
 
-
                 try:
                     for tablerow in range(2,len(self.tables[table])):
                         for gintrow in range(0,gint_rows):
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
-                                matched = True
+                                self.matched = True
                                 self.tables[table]['Depth'][tablerow] = self.tables[table]['SPEC_DPTH'][tablerow]
                                 self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
                                 self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
@@ -1396,31 +1189,13 @@ Did you select the correct gint?''')
                         if str(self.tables[table]['PTST_TESN'][tablerow]) == '':
                             self.tables[table]['PTST_TESN'][tablerow] = "1"                
 
-                '''Drop columns'''
-                if "match_id" in self.tables[table]:
-                    self.tables[table].drop(['match_id'], axis=1, inplace=True)
-
             except Exception as e:
                 print(f"Couldn't find table or field, skipping... {str(e)}")
                 pass
 
-        if matched:
-            self.text.set('''Matching complete! Click: 'Save AGS file'.
-''')
-            window.update()
-            print("Matching complete!")
-            self._enable_buttons()
-            if self.error == True:
-                self.text.set('''gINT matches, Lab doesn't.
-Re-open the AGS and select correct lab.''')
-                window.update()
-                print("Cannot find GCHM or ERES table(s) - are you sure this AGS is from DETS? Try matching again.")
-        else:
-            self.text.set('''Couldn't match sample data.
-Did you select the correct gint?''')
-            window.update()
-            print("Unable to match sample data from gINT.")    
-            self._enable_buttons()
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
 
 
     def ags_table_reset(self):
@@ -1430,7 +1205,7 @@ Did you select the correct gint?''')
 
         
     def del_non_lab_tables(self):
-        self.ags_table_reset()
+        self.get_ags_tables()
 
         for table in self.result_tables:
             if table in list(self.tables):
@@ -1484,17 +1259,18 @@ Check the AGS with "View data".''')
 
     
     def get_lab_tables(self):
-        self.ags_table_reset()
+        self.get_ags_tables()
+        self.result_tables.append('GEOL')
+        self.result_tables.append('DREM')
+        self.result_tables.append('DETL')
 
-        self.lab_tables = self.result_tables
-
-        self.lab_tables.append('GEOL')
-        self.lab_tables.append('DREM')
-        self.lab_tables.append('DETL')
-
-        for table in self.lab_tables:
+        for table in self.result_tables:
             if table in list(self.tables):
                 self.ags_tables.append(table)
+
+        for table in list(self.result_tables):
+            if table == 'GEOL' or table == 'DREM' or table == 'DETL':
+                self.result_tables.remove(table)
 
 
     def export_lab_only(self):
@@ -1515,37 +1291,38 @@ Check the AGS with "View data".''')
 Click "Save AGS file"''')
             window.update()
             print("Lab Data & GEOL export ready. Click 'Save AGS file'.")
+            self.ags_table_reset()
 
         else:
             self.text.set('''Could not find any Lab or GEOL tables.
 Check the AGS with "View data".''')
             window.update()
             print("No Lab or GEOL groups found - did this AGS contain CPT data? Check the data with 'View data'.")
+            self.ags_table_reset()
 
-
-    def _disable_buttons(self):
+    def disable_buttons(self):
         self.button_open.configure(state=tk.DISABLED)
         self.pandas_gui.configure(state=tk.DISABLED)
         self.button_count_results.configure(state=tk.DISABLED)
         self.button_ags_checker.configure(state=tk.DISABLED)
         self.button_save_ags.configure(state=tk.DISABLED)
-        self.del_tbl.configure(state=tk.DISABLED)
-        self.cpt_only.configure(state=tk.DISABLED)
-        self.lab_only.configure(state=tk.DISABLED)
+        self.button_del_tbl.configure(state=tk.DISABLED)
+        self.button_cpt_only.configure(state=tk.DISABLED)
+        self.button_lab_only.configure(state=tk.DISABLED)
         self.lab_select.configure(state=tk.DISABLED)
-        self.match_lab.configure(state=tk.DISABLED)
+        self.button_match_lab.configure(state=tk.DISABLED)
         
-    def _enable_buttons(self):
+    def enable_buttons(self):
         self.button_open.configure(state=tk.NORMAL)
         self.pandas_gui.configure(state=tk.NORMAL)
         self.button_count_results.configure(state=tk.NORMAL)
         self.button_ags_checker.configure(state=tk.NORMAL)
         self.button_save_ags.configure(state=tk.NORMAL)
-        self.del_tbl.configure(state=tk.NORMAL)
-        self.cpt_only.configure(state=tk.NORMAL)
-        self.lab_only.configure(state=tk.NORMAL)
+        self.button_del_tbl.configure(state=tk.NORMAL)
+        self.button_cpt_only.configure(state=tk.NORMAL)
+        self.button_lab_only.configure(state=tk.NORMAL)
         self.lab_select.configure(state=tk.NORMAL)
-        self.match_lab.configure(state=tk.NORMAL)
+        self.button_match_lab.configure(state=tk.NORMAL)
 
 window = ct.CTk()
 app = Application()
