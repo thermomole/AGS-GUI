@@ -685,7 +685,8 @@ Did you select the correct gINT or AGS?''')
                         if 'TRET_SHST' in self.tables[table].keys():
                             if self.tables[table]['TRET_SHST'][tablerow] == '' and self.tables[table]['TRET_DEVF'][tablerow] != '':
                                 self.tables[table]['TRET_SHST'][tablerow] = round(float(self.tables[table]['TRET_DEVF'][tablerow]) / 2)
-
+                        if 'TRET_CELL' in self.tables[table].keys():
+                            self.tables[table]['TRET_CELL'][tablerow] = round(float(self.tables[table]['TRET_CELL'][tablerow]))
 
                 '''LPDN'''
                 if table == 'LPDN':
