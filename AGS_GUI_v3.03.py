@@ -11,7 +11,6 @@ import common.splash as splash
 warnings.filterwarnings("ignore")
 
 # if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
-# split match functions to smaller functions where possible
 
 class Application(ct.CTkFrame):
 
