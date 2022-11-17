@@ -42,3 +42,4 @@ def del_splash():
     splash.destroy()
 
 splash_init()
+
