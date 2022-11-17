@@ -19,10 +19,11 @@ else:
     wid = int(screen_width / 3)
     hei = int(screen_height / 3)
 
-splash.geometry(f"510x255+{wid}+{hei}")
+splash.geometry(f"640x320+{wid}+{hei}")
 
 splash.wm_overrideredirect(True)
 splash.lift()
+splash.config(bg = '#000000')
 splash.wm_attributes("-transparentcolor", "black")
 splash_logo = Image.open('images/GQ_AGS.PNG')
 splash_img = ImageTk.PhotoImage(splash_logo)
