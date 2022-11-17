@@ -810,7 +810,7 @@ Did you select the correct gINT or AGS?''')
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                 self.matched = True
                                 if table == 'ERES':
-                                    if not 'ERES_REM' in self.tables[table]:
+                                    if 'ERES_REM' not in self.tables[table].keys():
                                         self.tables[table].insert(len(self.tables[table].keys()),'ERES_REM','')
                                     self.tables[table]['ERES_REM'][tablerow] = self.tables[table]['SPEC_REF'][tablerow]
                                 self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
@@ -824,7 +824,8 @@ Did you select the correct gINT or AGS?''')
                                 for x in self.tables[table].keys():
                                     if "LAB" in x:
                                         self.tables[table][x][tablerow] = "DETS"
-                except:
+                except Exception as e:
+                    print(e)
                     pass
 
                 '''GCHM'''
@@ -851,6 +852,8 @@ Did you select the correct gINT or AGS?''')
                             self.tables[table]['ERES_TNAM'][tablerow] = "WS"
                         if "caco3" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
                             self.tables[table]['ERES_TNAM'][tablerow] = "CACO3"
+                        if "co2" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "CO2"
                         if "ph" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
                             self.tables[table]['ERES_TNAM'][tablerow] = "PH"
                         if "chloride" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
