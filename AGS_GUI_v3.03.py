@@ -742,19 +742,33 @@ Did you select the correct gINT or AGS?''')
                             if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
                                 if 'LDYN_SWAV1' in self.tables[table] or 'LDYN_SWAV1SS' in self.tables[table]:
                                     if self.tables[table]['LDYN_SWAV1SS'][tablerow] == "":
-                                        self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(self.tables[table]['LDYN_SWAV1'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV2'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV3'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV4'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV5'][tablerow])
-                                        ]))
+                                        if self.tables[table]['LDYN_SWAV5'][tablerow] == "":
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4'][tablerow]))
+                                            ]))
+                                        else:
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV5'][tablerow]))
+                                            ]))
                                     else:
-                                        self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(self.tables[table]['LDYN_SWAV1SS'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV2SS'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV3SS'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV4SS'][tablerow]),
-                                        int(self.tables[table]['LDYN_SWAV5SS'][tablerow])
-                                        ]))
+                                        if self.tables[table]['LDYN_SWAV5SS'][tablerow] == "":
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4SS'][tablerow]))
+                                            ]))
+                                        else:
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV5SS'][tablerow]))
+                                            ]))
                             if self.tables[table]['LDYN_REM'][tablerow] == "":
                                 self.tables[table]['LDYN_REM'][tablerow] = "Bender Element"
 
