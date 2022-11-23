@@ -676,6 +676,13 @@ Did you select the correct gINT or AGS?''')
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['TREG_TYPE'][tablerow] == 'CU' and self.tables[table]['TREG_COH'][tablerow] == '0':
                             self.tables[table]['TREG_COH'][tablerow] = ''
+                            self.tables[table]['TREG_PHI'][tablerow] = ''
+                            self.tables[table]['TREG_COND'][tablerow] = 'UNDISTURBED'
+                        if self.tables[table]['TREG_TYPE'][tablerow] == 'CD':
+                            self.tables[table]['TREG_COND'][tablerow] = 'REMOULDED'
+                            if self.tables[table]['TREG_PHI'][tablerow] == '':
+                                cid_sample = str(self.tables[table]['SAMP_ID'][tablerow]) + "-" + str(self.tables[table]['SPEC_REF'][tablerow])
+                                print(f'CID result: {cid_sample} - does not have friction angle.')
 
 
                 '''TRET'''
@@ -683,7 +690,8 @@ Did you select the correct gINT or AGS?''')
                     for tablerow in range(2,len(self.tables[table])):
                         if 'TRET_SHST' in self.tables[table].keys():
                             if self.tables[table]['TRET_SHST'][tablerow] == '' and self.tables[table]['TRET_DEVF'][tablerow] != '':
-                                self.tables[table]['TRET_SHST'][tablerow] = round(float(self.tables[table]['TRET_DEVF'][tablerow]) / 2)
+                                if self.tables['TREG']['TREG_TYPE'][tablerow] != 'CD':
+                                    self.tables[table]['TRET_SHST'][tablerow] = round(float(self.tables[table]['TRET_DEVF'][tablerow]) / 2)
                         if 'TRET_CELL' in self.tables[table].keys():
                             self.tables[table]['TRET_CELL'][tablerow] = round(float(self.tables[table]['TRET_CELL'][tablerow]))
 
@@ -699,6 +707,7 @@ Did you select the correct gINT or AGS?''')
                     for tablerow in range(2,len(self.tables[table])):
                         if self.tables[table]['CONG_TYPE'][tablerow] == '' and self.tables[table]['CONG_COND'][tablerow] == 'Intact':
                             self.tables[table]['CONG_TYPE'][tablerow] = 'CRS'
+                            self.tables[table]['CONG_COND'][tablerow] = 'UNDISTURBED'
                         if "intact" in str(self.tables[table]['CONG_COND'][tablerow].lower()):
                             self.tables[table]['CONG_COND'][tablerow] = "UNDISTURBED"
                         if "oed" in str(self.tables[table]['CONG_TYPE'][tablerow].lower()):
