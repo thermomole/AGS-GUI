@@ -310,6 +310,19 @@ Please select an AGS with "Open File..."''')
         
     def export_results(self):
         self.disable_buttons()
+
+        self.results_with_samp_and_type.reset_index(inplace=True)
+        self.results_with_samp_and_type.sort_index(inplace=True)
+
+        if len(self.results_with_samp_and_type.columns) == 5:
+            self.results_with_samp_and_type.loc[-1] = ['INDX','BH','ID','REF','DEPTH']
+            self.results_with_samp_and_type.index = self.results_with_samp_and_type.index + 1
+            self.results_with_samp_and_type.sort_index(inplace=True)
+        else:
+            self.results_with_samp_and_type.loc[-1] = ['INDX','BH','ID','REF','DEPTH','TYPE']
+            self.results_with_samp_and_type.index = self.results_with_samp_and_type.index + 1
+            self.results_with_samp_and_type.sort_index(inplace=True)
+
         self.path_directory = filedialog.asksaveasfilename(filetypes=[('CSV Files', '*.csv')],defaultextension="*.csv",title="Save results list as...")
         if not self.path_directory:
             self.enable_buttons()
@@ -318,7 +331,7 @@ Please select an AGS with "Open File..."''')
         self.result_list.to_csv(all_result_count, index=False, index_label=False, header=None)
         print(f"File saved in:  + {str(all_result_count)}")
         all_result_filename = self.path_directory[:-4] + "_all_results.csv"
-        self.results_with_samp_and_type.to_csv(all_result_filename, index=False, index_label=False, header=None)	
+        self.results_with_samp_and_type.to_csv(all_result_filename,  header=None)	
         print(f"File saved in:  + {str(all_result_filename)}")
         self.enable_buttons()
 
