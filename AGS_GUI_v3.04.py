@@ -331,7 +331,7 @@ Please select an AGS with "Open File..."''')
         self.result_list.to_csv(all_result_count, index=False, index_label=False, header=None)
         print(f"File saved in:  + {str(all_result_count)}")
         all_result_filename = self.path_directory[:-4] + "_all_results.csv"
-        self.results_with_samp_and_type.to_csv(all_result_filename,  header=None)	
+        self.results_with_samp_and_type.to_csv(all_result_filename, index=False,  header=None)	
         print(f"File saved in:  + {str(all_result_filename)}")
         self.enable_buttons()
 
