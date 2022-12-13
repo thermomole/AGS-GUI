@@ -24,7 +24,7 @@ class Application(ct.CTkFrame):
         window.lift()
         window.geometry('450x440+150+150')
         window.resizable(False,False)
-        window.title("AGS GUI v3.04")
+        window.title("AGS GUI v3.05")
 
         self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
