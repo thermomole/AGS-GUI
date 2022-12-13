@@ -60,7 +60,7 @@ class Application(ct.CTkFrame):
 
         self.selected_lab = ct.StringVar(value="Select a Lab")
 
-        self.lab_select = ct.CTkOptionMenu(master=self.botframe, variable=self.selected_lab, values=["GM Lab","DETS","Structural Soils","PSL","Geolabs","Geolabs (50HZ Fugro)"],
+        self.lab_select = ct.CTkOptionMenu(master=self.botframe, variable=self.selected_lab, values=["GM Lab","GM Lab PEZ","DETS","Structural Soils","PSL","Geolabs","Geolabs (50HZ Fugro)"],
         corner_radius=10, fg_color="#2b4768", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
         self.lab_select.pack(pady=8, side=tk.TOP)
         self.lab_select.configure(state=tk.DISABLED)
@@ -507,6 +507,9 @@ Please select an AGS with "Open File..."''')
         elif self.get_selected_lab() == "GM Lab":
             print('GM Lab AGS selected to match to gINT.')
             self.match_unique_id_gqm()
+        elif self.get_selected_lab() == "GM Lab PEZ":
+            print('GM Lab AGS for PEZ selected to match to gINT.')
+            self.match_unique_id_gqm_pez()
         elif self.get_selected_lab() == "DETS":
             print('DETS AGS selected to match to gINT.')
             self.match_unique_id_dets()
@@ -1236,6 +1239,247 @@ Did you select the correct gINT or AGS?''')
         self.check_matched_to_gint()
         self.enable_buttons()
 
+
+    def match_unique_id_gqm_pez(self):
+        self.disable_buttons()
+        self.get_gint()
+        self.matched = False
+        self.error = False
+
+        if not self.gint_location or self.gint_location == '':
+            self.text.set('''AGS file loaded.
+''')
+            window.update()
+            return
+
+        self.text.set('''Matching AGS to gINT, please wait...
+''')
+        window.update()
+        print(f"Matching GM Lab AGS to gINT... {self.gint_location}") 
+
+        self.get_ags_tables()
+
+        if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
+            self.error = True
+            print("GCHM or ERES table(s) found.")
+
+        self.create_match_id()
+
+        for table in self.ags_tables:
+            try:
+                gint_rows = self.get_spec().shape[0]
+
+                for row in range (0,gint_rows):
+                    self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(self.get_spec()['SPEC_REF'][row]) + str(format(self.get_spec()['Depth'][row],'.2f')) + str(self.get_spec()['SAMP_TYPE'][row][0])
+
+                for row in range (2,len(self.tables[table])):
+                    self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]) + str(self.tables[table]['SAMP_TYPE'][row]) + str(self.tables[table]['SAMP_TOP'][row]) + str(self.tables[table]['SAMP_REF'][row][0])
+                    
+                if table == 'SPEC':
+                    try:
+                        for row in range (2,len(self.tables['SPEC'])):
+                            self.tables['SPEC']['match_id'][row] = str(self.tables['SPEC']['LOCA_ID'][row]) + str(self.tables['SPEC']['SPEC_REF'][row]) + str(self.tables['SPEC']['SPEC_DPTH'][row])
+                    except:
+                        pass
+
+                try:
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                self.matched = True
+
+                                if table == 'CONG':
+                                    if self.tables[table]['SPEC_REF'][tablerow] == "OED" or self.tables[table]['SPEC_REF'][tablerow] == "OEDR" and self.tables[table]['CONG_TYPE'][tablerow] == '':
+                                        self.tables[table]['CONG_TYPE'][tablerow] = self.tables[table]['SPEC_REF'][tablerow]
+
+                                if table == 'SAMP':
+                                    self.tables[table]['SAMP_REM'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+
+                                self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+
+                                try:
+                                    self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                except:
+                                    pass
+
+                                try:
+                                    self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+                                except:
+                                    pass
+
+                                for x in self.tables[table].keys():
+                                    if "LAB" in x:
+                                        self.tables[table][x][tablerow] = "GM Lab"
+
+                except Exception as e:
+                    print(str(e))
+                    pass
+
+                '''SHBG'''
+                if table == 'SHBG':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "small" in str(self.tables[table]['SHBG_TYPE'][tablerow].lower()):
+                            self.tables[table]['SHBG_REM'][tablerow] += " - " + self.tables[table]['SHBG_TYPE'][tablerow]
+                            self.tables[table]['SHBG_TYPE'][tablerow] = "SMALL SBOX"
+
+                
+                '''SHBT'''
+                if table == 'SHBT':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['SHBT_NORM'][tablerow]:
+                            self.tables[table]['SHBT_NORM'][tablerow] = round(float(self.tables[table]['SHBT_NORM'][tablerow]))
+
+
+                '''LLPL'''
+                if table == 'LLPL':
+                    if 'Non-Plastic' not in self.tables[table]:
+                        self.tables[table].insert(13,'Non-Plastic','')
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['LLPL_LL'][tablerow] == '' and self.tables[table]['LLPL_PL'][tablerow] == '' and self.tables[table]['LLPL_PI'][tablerow] == '':
+                            self.tables[table]['Non-Plastic'][tablerow] = -1
+
+
+                '''GRAG'''
+                if table == 'GRAG':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables['GRAG']['GRAG_SILT'][tablerow] == '' and self.tables['GRAG']['GRAG_CLAY'][tablerow] == '':
+                            if self.tables['GRAG']['GRAG_VCRE'][tablerow] == '':
+                                self.tables['GRAG']['GRAG_FINE'][tablerow] = format(100 - (float(self.tables['GRAG']['GRAG_GRAV'][tablerow])) - (float(self.tables['GRAG']['GRAG_SAND'][tablerow])),".1f")
+                            else:
+                                self.tables['GRAG']['GRAG_FINE'][tablerow] = format(100 - (float(self.tables['GRAG']['GRAG_VCRE'][tablerow])) - (float(self.tables['GRAG']['GRAG_GRAV'][tablerow])) - (float(self.tables['GRAG']['GRAG_SAND'][tablerow])),'.1f')
+                        else:
+                            self.tables['GRAG']['GRAG_FINE'][tablerow] = format((float(self.tables['GRAG']['GRAG_SILT'][tablerow]) + float(self.tables['GRAG']['GRAG_CLAY'][tablerow])),'.1f')
+
+
+                '''GRAT'''
+                if table == 'GRAT':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['GRAT_PERP'][tablerow]:
+                            self.tables[table]['GRAT_PERP'][tablerow] = round(float(self.tables[table]['GRAT_PERP'][tablerow]))
+
+
+                '''TREG'''
+                if table == 'TREG':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['TREG_TYPE'][tablerow] == 'CU' and self.tables[table]['TREG_COH'][tablerow] == '0':
+                            self.tables[table]['TREG_COH'][tablerow] = ''
+                            self.tables[table]['TREG_PHI'][tablerow] = ''
+                            self.tables[table]['TREG_COND'][tablerow] = 'UNDISTURBED'
+                        if self.tables[table]['TREG_TYPE'][tablerow] == 'CD':
+                            self.tables[table]['TREG_COND'][tablerow] = 'REMOULDED'
+                            if self.tables[table]['TREG_PHI'][tablerow] == '':
+                                cid_sample = str(self.tables[table]['SAMP_ID'][tablerow]) + "-" + str(self.tables[table]['SPEC_REF'][tablerow])
+                                print(f'CID result: {cid_sample} - does not have friction angle.')
+
+
+                '''TRET'''
+                if table == 'TRET':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if 'TRET_SHST' in self.tables[table].keys():
+                            if self.tables[table]['TRET_SHST'][tablerow] == '' and self.tables[table]['TRET_DEVF'][tablerow] != '':
+                                if self.tables['TREG']['TREG_TYPE'][tablerow] != 'CD':
+                                    self.tables[table]['TRET_SHST'][tablerow] = round(float(self.tables[table]['TRET_DEVF'][tablerow]) / 2)
+                        if 'TRET_CELL' in self.tables[table].keys():
+                            self.tables[table]['TRET_CELL'][tablerow] = round(float(self.tables[table]['TRET_CELL'][tablerow]))
+
+                '''LPDN'''
+                if table == 'LPDN':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['LPDN_TYPE'][tablerow] == 'LARGE PKY':
+                            self.tables[table]['LPDN_TYPE'][tablerow] = 'LARGE PYK'
+
+
+                '''CONG'''
+                if table == 'CONG':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if self.tables[table]['CONG_TYPE'][tablerow] == '' and self.tables[table]['CONG_COND'][tablerow] == 'Intact':
+                            self.tables[table]['CONG_TYPE'][tablerow] = 'CRS'
+                            self.tables[table]['CONG_COND'][tablerow] = 'UNDISTURBED'
+                        if "intact" in str(self.tables[table]['CONG_COND'][tablerow].lower()):
+                            self.tables[table]['CONG_COND'][tablerow] = "UNDISTURBED"
+                        if "oed" in str(self.tables[table]['CONG_TYPE'][tablerow].lower()):
+                            self.tables[table]['CONG_TYPE'][tablerow] = "IL OEDOMETER"
+                        self.tables[table]['CONG_COND'][tablerow] = str(self.tables[table]['CONG_COND'][tablerow].upper())
+
+
+                '''TRIG & TRIT'''
+                if table == 'TRIG' or table == 'TRIT':
+                    if 'Depth' not in self.tables[table]:
+                        self.tables[table].insert(8,'Depth','')
+                    if table == 'TRIT':
+                        for tablerow in range(2,len(self.tables[table])):
+                            if self.tables[table]['TRIT_DEVF'][tablerow]:
+                                self.tables[table]['TRIT_DEVF'][tablerow] = round(float(self.tables[table]['TRIT_DEVF'][tablerow]))
+                            if self.tables[table]['TRIT_TESN'][tablerow] == '':
+                                self.tables[table]['TRIT_TESN'][tablerow] = 1
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                if self.tables['TRIG']['TRIG_COND'][tablerow] == 'REMOULDED':
+                                    self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow] + 0.01,'.2f')
+                                else:
+                                    self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+
+
+                '''RELD'''
+                if table == 'RELD':
+                    if 'Depth' not in self.tables[table]:
+                        self.tables[table].insert(8,'Depth','')
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                self.tables[table]['Depth'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+
+
+                '''LDYN'''
+                if table == 'LDYN':
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                if 'LDYN_SWAV1' in self.tables[table] or 'LDYN_SWAV1SS' in self.tables[table]:
+                                    if self.tables[table]['LDYN_SWAV1SS'][tablerow] == "":
+                                        if self.tables[table]['LDYN_SWAV5'][tablerow] == "":
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4'][tablerow]))
+                                            ]))
+                                        else:
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV5'][tablerow]))
+                                            ]))
+                                    else:
+                                        if self.tables[table]['LDYN_SWAV5SS'][tablerow] == "":
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4SS'][tablerow]))
+                                            ]))
+                                        else:
+                                            self.tables[table]['LDYN_SWAV'][tablerow] = int(mean([int(float(self.tables[table]['LDYN_SWAV1SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV2SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV3SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV4SS'][tablerow])),
+                                            int(float(self.tables[table]['LDYN_SWAV5SS'][tablerow]))
+                                            ]))
+                            if self.tables[table]['LDYN_REM'][tablerow] == "":
+                                self.tables[table]['LDYN_REM'][tablerow] = "Bender Element"
+
+            except Exception as e:
+                print(f"Couldn't find table or field, skipping... {str(e)}")
+                pass
+
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
+   
 
     def ags_table_reset(self):
         if not self.ags_tables == []:
