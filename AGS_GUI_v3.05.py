@@ -12,6 +12,8 @@ warnings.filterwarnings("ignore")
 
 # if not in any table flag warning for incorrect AGS instead of ERES/GCHM check for DETS
 
+#SPLASH WINDOW NOT SCALING CORRECTLY ON 100% MAGNIFICATION - RESIZE WINDOW?
+
 class Application(ct.CTkFrame):
 
     ct.set_appearance_mode("system")
