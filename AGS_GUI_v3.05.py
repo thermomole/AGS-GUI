@@ -199,7 +199,7 @@ Please select an AGS with "Open File..."''')
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)
                     elif 'CONG' in table:
-                        test_type = list(self.tables[table]['CONG_TYPE'])
+                        test_type = list(self.tables[table]['CONG_COND'])
                         test_type.pop(0)
                         test_type.pop(0)
                         test_type_df = pd.DataFrame.from_dict(test_type)

@@ -15,9 +15,12 @@ if screen_height == 1440:
 elif screen_height == 2160:
     wid = int(screen_width / 2)
     hei = int(screen_height / 2)
-else:
+elif screen_height == 1080:
     wid = int(screen_width / 3)
     hei = int(screen_height / 3)
+else:
+    wid = int(screen_width / 4)
+    hei = int(screen_height / 4)
 
 splash.geometry(f"640x320+{wid}+{hei}")
 
@@ -30,6 +33,7 @@ splash_img = ImageTk.PhotoImage(splash_logo)
 splash_label = tk.Label(image=splash_img,bg='black')
 splash_label.image = splash_img
 splash_label.place(x=0,y=0)
+splash.resizable(False,False)
 
 def splash_init():
     splash.after(4000,lambda:del_splash())
