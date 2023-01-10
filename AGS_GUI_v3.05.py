@@ -20,65 +20,65 @@ class Application(ct.CTkFrame):
     ct.set_default_color_theme("dark-blue")
 
     def __init__(self):
-        super(Application, self).__init__()
+        super(Application, self).__init__(window)
 
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
         window.lift()
         window.geometry('450x440+150+150')
         window.resizable(False,False)
-        window.title("AGS GUI v3.05")
+        window.title("AGS GUI v3.05a")
 
         self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
         
         self.button_open = ct.CTkButton(self, text="Open File...", command=self.get_ags_file, fg_color="#2b4768", 
-        corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
+        corner_radius=10, hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=300)
         self.button_open.pack(pady=8, padx=8)
 
         self.pandas_gui = ct.CTkButton(self, text="View Data", command=self.start_pandasgui, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=200)
         self.pandas_gui.pack(pady=8)
         self.pandas_gui.configure(state=tk.DISABLED)
 
         self.button_save_ags = ct.CTkButton(self, text="Save AGS File", command=self.save_ags, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=200)
         self.button_save_ags.pack(pady=8)
         self.button_save_ags.configure(state=tk.DISABLED)
 
         self.button_count_results = ct.CTkButton(self, text="Count Lab Results", command=self.count_lab_results, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=150)
         self.button_count_results.pack(pady=8, padx=10, side=tk.LEFT)
         self.button_count_results.configure(state=tk.DISABLED)
         
         self.button_ags_checker = ct.CTkButton(self, text="Check AGS for Errors", command=self.check_ags, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=150)
         self.button_ags_checker.pack(pady=8, padx=10, side=tk.RIGHT)
         self.button_ags_checker.configure(state=tk.DISABLED)
 
         self.button_del_tbl = ct.CTkButton(self.botframe, text='''Delete Non-Result Tables for gINT Import''', command=self.del_non_lab_tables, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=300)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=300)
         self.button_del_tbl.pack(pady=8, side=tk.TOP)
         self.button_del_tbl.configure(state=tk.DISABLED)
 
         self.selected_lab = ct.StringVar(value="Select a Lab")
 
         self.lab_select = ct.CTkOptionMenu(master=self.botframe, variable=self.selected_lab, values=["GM Lab","GM Lab PEZ","DETS","Structural Soils","PSL","Geolabs","Geolabs (50HZ Fugro)"],
-        corner_radius=10, fg_color="#2b4768", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        corner_radius=10, fg_color="#2b4768", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=200)
         self.lab_select.pack(pady=8, side=tk.TOP)
         self.lab_select.configure(state=tk.DISABLED)
 
         self.button_match_lab = ct.CTkButton(self.botframe, text='''Match Lab AGS to gINT''', command=self.select_lab_match, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=200)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=200)
         self.button_match_lab.pack(pady=8, side=tk.TOP)
         self.button_match_lab.configure(state=tk.DISABLED)
 
         self.button_cpt_only = ct.CTkButton(self.botframe, text='''CPT Only Data Export''', command=self.del_non_cpt_tables, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=150)
         self.button_cpt_only.pack(pady=8, padx=10, side=tk.RIGHT)
         self.button_cpt_only.configure(state=tk.DISABLED)
 
         self.button_lab_only = ct.CTkButton(self.botframe, text='''Lab Only Data Export''', command=self.export_lab_only, 
-        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), width=150)
+        corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=150)
         self.button_lab_only.pack(pady=8, padx=10, side=tk.LEFT)
         self.button_lab_only.configure(state=tk.DISABLED)
     
@@ -86,7 +86,7 @@ class Application(ct.CTkFrame):
         self.text.set('''Please insert AGS file.
 ''')
 
-        self.greeting = ct.CTkLabel(textvariable=self.text, text_font=("Tahoma",9))
+        self.greeting = ct.CTkLabel(window, textvariable=self.text, font=("Tahoma",11))
         self.greeting.pack(pady=(24,8))
 
         self.pack(padx=12)
@@ -276,7 +276,7 @@ Please select an AGS with "Open File..."''')
                 df_list = ["Error: No laboratory test results found."]
                 empty_df = pd.DataFrame.from_dict(df_list)
                 self.result_list = empty_df
-            self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",9))
+            self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",11))
             self.result_list.index.name = ' '
             window.geometry('775x620')
             self.listbox.tag_configure('tl', justify='left')
@@ -285,7 +285,7 @@ Please select an AGS with "Open File..."''')
             self.box = True
 
             self.button_export_results = ct.CTkButton(self, text="Export Results List", command=self.export_results, 
-            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
+            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), height=50, width=200)
             self.button_export_results.pack(pady=(8,8), side=tk.BOTTOM)
             self.listbox.pack(padx=20,pady=8, side=tk.BOTTOM)
 
@@ -428,7 +428,7 @@ Please select an AGS with "Open File..."''')
         if errors:
             window.geometry('550x460')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
-            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", text_font=("Tahoma",9), height=50, width=200)
+            corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), height=50, width=200)
             self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
             self.export = True
             self.text.set('''Error(s) found, check output or click 'Export Error Log'.

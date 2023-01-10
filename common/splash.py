@@ -6,6 +6,17 @@ import customtkinter as ct
 
 splash = ct.CTk()
 
+splash.wm_overrideredirect(True)
+splash.lift()
+splash.config(bg = '#000000')
+splash.wm_attributes("-transparentcolor", "black")
+splash_logo = Image.open('images/GQ_AGS.PNG')
+splash_img = ImageTk.PhotoImage(splash_logo)
+splash_label = tk.Label(image=splash_img,bg='black')
+splash_label.image = splash_img
+splash_label.place(x=0,y=0)
+splash.resizable(False,False)
+
 screen_width = splash.winfo_screenwidth()
 screen_height = splash.winfo_screenheight()
 
@@ -23,17 +34,6 @@ else:
     hei = int(screen_height / 4)
 
 splash.geometry(f"640x320+{wid}+{hei}")
-
-splash.wm_overrideredirect(True)
-splash.lift()
-splash.config(bg = '#000000')
-splash.wm_attributes("-transparentcolor", "black")
-splash_logo = Image.open('images/GQ_AGS.PNG')
-splash_img = ImageTk.PhotoImage(splash_logo)
-splash_label = tk.Label(image=splash_img,bg='black')
-splash_label.image = splash_img
-splash_label.place(x=0,y=0)
-splash.resizable(False,False)
 
 def splash_init():
     splash.after(4000,lambda:del_splash())
