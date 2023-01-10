@@ -77,9 +77,8 @@
 ##### Developed for [Geoquip-Marine](https://www.geoquip-marine.com/) using [AGS 4 Data Format](https://www.ags.org.uk/data-format/), [python-ags4](https://pypi.org/project/python-ags4/), [PandasGUI](https://pypi.org/project/pandasgui/), [tkinter](https://docs.python.org/3/library/tkinter.html), [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter).
 <br>
 
-<!---
-   <a href="https://www.geoquip-marine.com/"><img src="images/geobig.png" data-canonical-src="images/geobig.png" width="80"/></a>
---->
+   <a href="https://www.geoquip-marine.com/"><img src="images/GQ_AGS2.PNG" data-canonical-src="images/geobig.png"/></a>
+   
 <br>
 
 ##### Anton [(lachesis17)](https://github.com/lachesis17) 🪐
