@@ -24,6 +24,8 @@
 
 <img src="images/AGS-GUI.png" data-canonical-src="images/AGS-GUI.png"/>
 
+Wordcloud wheel for latest Python 3.11.1 (dependency for PandasGUI): wordcloud-1.8.1-cp311-cp311-win_amd64.whl
+
 #### Open an AGS file
   - Open any valid AGS files.
     - There may be an error as follows: Error: Line x does not have the same number of entries as the HEADING.
