@@ -26,7 +26,7 @@ class Application(ct.CTkFrame):
         window.lift()
         window.geometry('450x440+150+150')
         window.resizable(False,False)
-        window.title("AGS GUI v3.05a")
+        window.title("AGS GUI v3.06")
 
         self.botframe = ct.CTkFrame(window)
         self.botframe.pack(pady=(0,16), padx=8, side=tk.BOTTOM)
@@ -1609,6 +1609,7 @@ Check the AGS with "View data".''')
         self.lab_select.configure(state=tk.NORMAL)
         self.button_match_lab.configure(state=tk.NORMAL)
 
-window = ct.CTk()
-app = Application()
-window.mainloop()
+if __name__ == '__main__':
+    window = tk.Tk()
+    app = Application()
+    window.mainloop()
