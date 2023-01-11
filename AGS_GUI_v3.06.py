@@ -24,7 +24,7 @@ class Application(ct.CTkFrame):
 
         window.iconphoto(False, tk.PhotoImage(file='images/geo.png'))
         window.lift()
-        window.geometry('450x440+150+150')
+        window.geometry('500x550+150+150')
         window.resizable(False,False)
         window.title("AGS GUI v3.06")
 
@@ -115,7 +115,7 @@ class Application(ct.CTkFrame):
     def get_ags_file(self):
         self.disable_buttons()
 
-        window.geometry('450x440')
+        window.geometry('500x550')
         self.text.set('''Please insert AGS file.
 ''')
         if self.box == True:
@@ -278,7 +278,7 @@ Please select an AGS with "Open File..."''')
                 self.result_list = empty_df
             self.listbox = scrolledtext.ScrolledText(self, height=10, font=("Tahoma",11))
             self.result_list.index.name = ' '
-            window.geometry('775x620')
+            window.geometry('825x730')
             self.listbox.tag_configure('tl', justify='left')
             self.listbox.insert('end', self.result_list, 'tl')
             self.listbox.delete(1.0,3.0)
@@ -292,7 +292,7 @@ Please select an AGS with "Open File..."''')
             self.text.set('''Results list ready to export.
 ''')
         else:
-            window.geometry('775x620')
+            window.geometry('825x730')
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
             self.listbox.delete(1.0,100.0)
@@ -341,7 +341,7 @@ Please select an AGS with "Open File..."''')
     def start_pandasgui(self):
         self.disable_buttons()
 
-        window.geometry('450x440')
+        window.geometry('500x550')
         self.text.set('''PandasGUI loading, please wait...
 Close GUI to resume.''')
         window.update()
@@ -370,7 +370,7 @@ Close GUI to resume.''')
         
     def check_ags(self):
         self.disable_buttons()
-        window.geometry('450x440')
+        window.geometry('500x550')
         if self.box == True:
             self.listbox.pack_forget()
             self.button_export_results.pack_forget()
@@ -426,7 +426,7 @@ Please select an AGS with "Open File..."''')
                 self.error_list.append(f"Error in line: {error['line']}, group: {error['group']}, description: {error['desc']}")
 
         if errors:
-            window.geometry('550x460')
+            window.geometry('600x570')
             self.button_export_error = ct.CTkButton(self, text="Export Error Log", command=self.export_errors, 
             corner_radius=10, fg_color="#2b4768", hover_color="#6bb7dd", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), height=50, width=200)
             self.button_export_error.pack(pady=(8,8), side=tk.BOTTOM)
