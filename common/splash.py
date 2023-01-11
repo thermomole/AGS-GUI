@@ -22,18 +22,18 @@ screen_height = splash.winfo_screenheight()
 
 if screen_height == 1440:
     wid = int(screen_width / 2.5)
-    hei = int(screen_height / 2.5)
+    hei = int(screen_height / 2.35)
 elif screen_height == 2160:
     wid = int(screen_width / 2)
-    hei = int(screen_height / 2)
+    hei = int(screen_height / 1.9)
 elif screen_height == 1080:
-    wid = int(screen_width / 3)
-    hei = int(screen_height / 3)
+    wid = int(screen_width / 2.75)
+    hei = int(screen_height / 2.6)
 else:
     wid = int(screen_width / 4)
     hei = int(screen_height / 4)
 
-splash.geometry(f"640x320+{wid}+{hei}")
+splash.geometry(f"485x225+{wid}+{hei}")
 
 def splash_init():
     splash.after(4000,lambda:del_splash())
@@ -47,4 +47,3 @@ def del_splash():
     splash.destroy()
 
 splash_init()
-
