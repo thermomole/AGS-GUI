@@ -62,7 +62,7 @@ class Application(ct.CTkFrame):
 
         self.selected_lab = ct.StringVar(value="Select a Lab")
 
-        self.lab_select = ct.CTkOptionMenu(master=self.botframe, variable=self.selected_lab, values=["GM Lab","GM Lab PEZ","DETS","Structural Soils","PSL","Geolabs","Geolabs (50HZ Fugro)"],
+        self.lab_select = ct.CTkOptionMenu(master=self.botframe, variable=self.selected_lab, values=["GM Lab","GM Lab PEZ","DETS", "DETS PEZ", "Structural Soils","PSL","Geolabs","Geolabs (50HZ Fugro)"],
         corner_radius=10, fg_color="#2b4768", text_color="#FFFFFF", text_color_disabled="#999999", font=("Tahoma",11), width=200)
         self.lab_select.pack(pady=8, side=tk.TOP)
         self.lab_select.configure(state=tk.DISABLED)
@@ -515,6 +515,9 @@ Please select an AGS with "Open File..."''')
         elif self.get_selected_lab() == "DETS":
             print('DETS AGS selected to match to gINT.')
             self.match_unique_id_dets()
+        elif self.get_selected_lab() == "DETS PEZ":
+            print('DETS AGS for PEZ selected to match to gINT.')
+            self.match_unique_id_dets_pez()
         elif self.get_selected_lab() == "Structural Soils":
             print('Structural Soils Soils AGS selected to match to gINT.')
             self.match_unique_id_soils()
@@ -1481,6 +1484,114 @@ Did you select the correct gINT or AGS?''')
         self.remove_match_id()
         self.check_matched_to_gint()
         self.enable_buttons()
+
+
+    def match_unique_id_dets_pez(self):
+        self.disable_buttons()
+        self.get_gint()
+        self.matched = False
+        self.error = False
+
+        if not self.gint_location or self.gint_location == '':
+            self.text.set('''AGS file loaded.
+''')
+            window.update()
+            return
+
+        self.text.set('''Matching AGS to gINT, please wait...
+''')
+        window.update()
+        print(f"Matching DETS for PEZ AGS to gINT... {self.gint_location}") 
+
+        self.get_ags_tables()
+
+        if 'GCHM' in self.ags_tables or 'ERES' in self.ags_tables:
+            pass
+        else:
+            self.error = True
+            print("Cannot find GCHM or ERES - looks like this AGS is from GM Lab.")
+
+        self.create_match_id()
+
+        for table in self.ags_tables:
+            try:
+                gint_rows = self.get_spec().shape[0]
+
+                for row in range (0,gint_rows):
+                    self.get_spec()['match_id'][row] = str(self.get_spec()['PointID'][row]) + str(format(self.get_spec()['Depth'][row],'.2f')) + str(self.get_spec()['SAMP_TYPE'][row][0]) + str(self.get_spec()['SPEC_REF'][row])
+
+                for row in range (2,len(self.tables[table])):
+                    self.tables[table]['match_id'][row] = str(self.tables[table]['LOCA_ID'][row]).rsplit(' ', 2)[0] + str(self.tables[table]['SAMP_TOP'][row]) + str(self.tables[table]['SAMP_REF'][row][0]) + str(self.tables[table]['SAMP_REF'][row]).split(' ')[1]
+
+                try:
+                    for tablerow in range(2,len(self.tables[table])):
+                        for gintrow in range(0,gint_rows):
+                            if self.tables[table]['match_id'][tablerow] == self.get_spec()['match_id'][gintrow]:
+                                self.matched = True
+                                if table == 'ERES':
+                                    if 'ERES_REM' not in self.tables[table].keys():
+                                        self.tables[table].insert(len(self.tables[table].keys()),'ERES_REM','')
+                                    self.tables[table]['ERES_REM'][tablerow] = self.tables[table]['SPEC_REF'][tablerow]
+                                self.tables[table]['LOCA_ID'][tablerow] = self.get_spec()['PointID'][gintrow]
+                                self.tables[table]['SAMP_ID'][tablerow] = self.get_spec()['SAMP_ID'][gintrow]
+                                self.tables[table]['SAMP_REF'][tablerow] = self.get_spec()['SAMP_REF'][gintrow]
+                                self.tables[table]['SAMP_TYPE'][tablerow] = self.get_spec()['SAMP_TYPE'][gintrow]
+                                self.tables[table]['SPEC_REF'][tablerow] = self.get_spec()['SPEC_REF'][gintrow]
+                                self.tables[table]['SAMP_TOP'][tablerow] = format(self.get_spec()['SAMP_Depth'][gintrow],'.2f')
+                                self.tables[table]['SPEC_DPTH'][tablerow] = format(self.get_spec()['Depth'][gintrow],'.2f')
+                                
+                                for x in self.tables[table].keys():
+                                    if "LAB" in x:
+                                        self.tables[table][x][tablerow] = "DETS"
+                except Exception as e:
+                    print(e)
+                    pass
+
+                '''GCHM'''
+                if table == 'GCHM':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "ph" in str(self.tables[table]['GCHM_UNIT'][tablerow].lower()):
+                            self.tables[table]['GCHM_UNIT'][tablerow] = "-"
+                        if "co3" in str(self.tables[table]['GCHM_CODE'][tablerow].lower()):
+                            self.tables[table]['GCHM_CODE'][tablerow] = "CACO3"
+
+
+                '''ERES'''
+                if table == 'ERES':
+                    for tablerow in range(2,len(self.tables[table])):
+                        if "<" in str(self.tables[table]['ERES_RTXT'][tablerow].lower()):
+                            self.tables[table]['ERES_RTXT'][tablerow] = str(self.tables[table]['ERES_RTXT'][tablerow]).rsplit(" ", 1)[1]
+                        if "solid_21" in str(self.tables[table]['ERES_REM'][tablerow].lower()) or "2:1" in str(self.tables[table]['ERES_NAME'][tablerow].lower()):
+                            self.tables[table]['ERES_NAME'][tablerow] = "SOLID_21 WATER EXTRACT"
+                        if "solid_wat" in str(self.tables[table]['ERES_REM'][tablerow].lower()):
+                            self.tables[table]['ERES_NAME'][tablerow] = "SOLID_11 WATER EXTRACT"
+                        if "solid_tot" in str(self.tables[table]['ERES_REM'][tablerow].lower()):
+                            self.tables[table]['ERES_NAME'][tablerow] = "SOLID_TOTAL"
+                        if "sulph" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()) and "so4" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()) or "sulf" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "WS"
+                        if "sulph" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()) and "total" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "TS"
+                        if "caco3" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "CACO3"
+                        if "co2" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "CO2"
+                        if "ph" == str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "PH"
+                        if "chloride" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "Cl"
+                        if "los" in str(self.tables[table]['ERES_TNAM'][tablerow].lower()):
+                            self.tables[table]['ERES_TNAM'][tablerow] = "LOI"
+                        if "ph" in str(self.tables[table]['ERES_RUNI'][tablerow].lower()):
+                            self.tables[table]['ERES_RUNI'][tablerow] = "-"
+
+            except Exception as e:
+                print(f"Couldn't find table or field, skipping... {str(e)}")
+                pass
+
+        self.remove_match_id()
+        self.check_matched_to_gint()
+        self.enable_buttons()
+
    
 
     def ags_table_reset(self):
